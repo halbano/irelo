@@ -118,7 +118,7 @@ export default function SingleQuoteForm({ variant = "b" }: { variant?: string })
         <Button
           type="submit"
           disabled={submitting}
-          className="h-12 w-full bg-cta text-base font-semibold text-cta-foreground hover:bg-cta-hover"
+          className="h-12 w-full bg-cta text-base font-semibold text-cta-foreground hover:bg-cta-hover motion-safe:transition-transform motion-safe:hover:-translate-y-0.5"
         >
           {submitting ? (
             <>

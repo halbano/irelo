@@ -245,7 +245,7 @@ export function QuoteResult({
   route: LeadInput;
 }) {
   return (
-    <div className="rounded-2xl border border-border bg-card p-6 text-center shadow-sm sm:p-8">
+    <div className="rounded-2xl border border-border bg-card p-6 text-center shadow-sm motion-safe:animate-in motion-safe:fade-in motion-safe:zoom-in-95 motion-safe:duration-300 sm:p-8">
       <div className="mx-auto flex size-12 items-center justify-center rounded-full bg-navy/10">
         <CheckCircle2 className="size-7 text-navy" aria-hidden />
       </div>

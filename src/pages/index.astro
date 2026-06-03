@@ -1,6 +1,7 @@
 ---
 import Layout from "@/layouts/Layout.astro";
 import QuoteForm from "@/components/QuoteForm.tsx";
+import ChatWidget from "@/components/ChatWidget.astro";
 import { assignVariant, FORM_EXPERIMENT } from "@/lib/experiment";
 import { track } from "@/lib/track";
 
@@ -105,8 +106,11 @@ const faqs = [
 
   <main>
     <!-- Hero -->
-    <section class="mx-auto max-w-6xl px-4 pt-10 pb-12 sm:pt-14">
-      <div class="grid gap-8 lg:grid-cols-2 lg:items-start lg:gap-12">
+    <section class="relative overflow-hidden">
+      <!-- Subtle depth: layered navy + warm radial washes, no image (keeps mobile LCP) -->
+      <div aria-hidden="true" class="pointer-events-none absolute inset-0 -z-10 bg-[radial-gradient(55rem_38rem_at_72%_-8%,rgba(16,42,67,0.07),transparent_60%),radial-gradient(34rem_26rem_at_108%_18%,rgba(194,65,12,0.05),transparent_60%)]"></div>
+      <div class="mx-auto max-w-6xl px-4 pt-10 pb-12 sm:pt-14">
+        <div class="grid gap-8 motion-safe:animate-in motion-safe:fade-in motion-safe:slide-in-from-bottom-2 motion-safe:duration-500 lg:grid-cols-2 lg:items-start lg:gap-12">
         <!-- Heading -->
         <div class="lg:col-start-1 lg:row-start-1">
           <p class="text-sm font-semibold tracking-wide text-navy uppercase">
@@ -172,6 +176,7 @@ const faqs = [
             <span><span class="font-semibold text-foreground">Trustpilot</span> · 4.8 · 1,900+ reviews</span>
           </div>
         </div>
+        </div>
       </div>
     </section>
 
@@ -193,7 +198,8 @@ const faqs = [
     </section>
 
     <!-- Testimonials -->
-    <section class="mx-auto max-w-6xl px-4 py-14">
+    <section class="border-b border-border bg-[#f4f6f9]">
+      <div class="mx-auto max-w-6xl px-4 py-14">
       <h2 class="text-3xl font-bold tracking-tight text-foreground sm:text-center">
         What our customers say
       </h2>
@@ -220,6 +226,7 @@ const faqs = [
           ))
         }
       </ul>
+      </div>
     </section>
 
     <!-- How it works -->
@@ -277,7 +284,8 @@ const faqs = [
     </section>
 
     <!-- FAQ -->
-    <section class="mx-auto max-w-3xl px-4 py-14">
+    <section class="border-t border-border bg-[#f4f6f9]">
+      <div class="mx-auto max-w-3xl px-4 py-14">
       <h2 class="text-center text-3xl font-bold tracking-tight text-foreground">Questions, answered</h2>
       <div class="mt-8 divide-y divide-border border-y border-border">
         {
@@ -294,6 +302,7 @@ const faqs = [
           ))
         }
       </div>
+      </div>
     </section>
 
     <!-- CTA band -->
@@ -307,7 +316,7 @@ const faqs = [
         </p>
         <a
           href="#top"
-          class="mt-6 inline-flex h-12 items-center rounded-md bg-cta px-8 font-semibold text-cta-foreground transition-colors hover:bg-cta-hover"
+          class="mt-6 inline-flex h-12 items-center rounded-md bg-cta px-8 font-semibold text-cta-foreground transition hover:bg-cta-hover motion-safe:hover:-translate-y-0.5"
         >
           Get my quote
         </a>
@@ -361,4 +370,6 @@ const faqs = [
       io.observe(hero);
     }
   </script>
+
+  <ChatWidget />
 </Layout>
