@@ -1,5 +1,7 @@
 import type { APIRoute } from "astro";
 import { validateLead, type LeadInput } from "@/lib/lead";
+import { track } from "@/lib/track";
+import { FORM_EXPERIMENT } from "@/lib/experiment";
 
 export const prerender = false;
 
@@ -18,7 +20,7 @@ const json = (data: unknown, status = 200) =>
  * (production failure handling is discussed in the README).
  */
 export const POST: APIRoute = async ({ request }) => {
-  let body: Partial<LeadInput>;
+  let body: Partial<LeadInput> & { experiment?: string; variant?: string };
   try {
     body = await request.json();
   } catch {
@@ -66,6 +68,15 @@ export const POST: APIRoute = async ({ request }) => {
       502,
     );
   }
+
+  // Conversion event, attributed to the A/B variant the visitor was served.
+  track({
+    event: "lead_submitted",
+    experiment: FORM_EXPERIMENT,
+    variant: typeof body.variant === "string" ? body.variant : "unknown",
+    leadId: post.leadId,
+    price: ping.price,
+  });
 
   return json({ ok: true, price: ping.price, leadId: post.leadId });
 };
