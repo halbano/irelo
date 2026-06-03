@@ -1,0 +1,27 @@
+---
+import "@/styles/global.css";
+
+interface Props {
+  title?: string;
+  description?: string;
+}
+
+const {
+  title = "Straightaway — Get your car on the road, straightaway",
+  description = "Get a real auto-transport quote in about 2 minutes. Door-to-door, fully insured, matched with FMCSA-verified carriers. No spam.",
+} = Astro.props;
+---
+
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <meta name="description" content={description} />
+    <link rel="icon" href="/favicon.svg" type="image/svg+xml" />
+    <title>{title}</title>
+  </head>
+  <body class="min-h-dvh bg-background text-foreground antialiased">
+    <slot />
+  </body>
+</html>
