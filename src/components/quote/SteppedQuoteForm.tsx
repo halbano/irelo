@@ -6,7 +6,6 @@ import { useLeadForm } from "./useLeadForm";
 import {
   ZipField,
   VehicleField,
-  DateField,
   TextField,
   EmailHint,
   ContactReassurance,
@@ -31,7 +30,7 @@ export default function SteppedQuoteForm({ variant = "a" }: { variant?: string }
   if (result) return <QuoteResult price={result.price} leadId={result.leadId} route={values} />;
 
   const next = () => {
-    if (validateFields(["originZip", "destinationZip", "vehicleType", "shipDate"])) setStep(2);
+    if (validateFields(["originZip", "destinationZip", "vehicleType"])) setStep(2);
   };
 
   const onSubmit = (e: React.FormEvent) => {
@@ -76,12 +75,6 @@ export default function SteppedQuoteForm({ variant = "a" }: { variant?: string }
             value={values.vehicleType}
             error={errors.vehicleType}
             onChange={(v) => set("vehicleType", v)}
-          />
-
-          <DateField
-            value={values.shipDate}
-            error={errors.shipDate}
-            onChange={(v) => set("shipDate", v)}
           />
         </div>
       ) : (

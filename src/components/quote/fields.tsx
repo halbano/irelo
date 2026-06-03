@@ -2,14 +2,8 @@ import { useId, useState, type ReactNode } from "react";
 import { ChevronDown, Lock, ShieldCheck, Star, CheckCircle2 } from "lucide-react";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
-import {
-  Select,
-  SelectContent,
-  SelectItem,
-  SelectTrigger,
-  SelectValue,
-} from "@/components/ui/select";
 import { VEHICLE_TYPES, type LeadInput } from "@/lib/lead";
+import { suggestZips } from "@/lib/zips";
 
 export const VEHICLE_LABELS: Record<string, string> = {
   car: "Car",
@@ -62,20 +56,62 @@ export function ZipField({
   onChange: (v: string) => void;
 }) {
   const id = useId();
+  const [open, setOpen] = useState(false);
+  // Simulated lookup: suggestions appear once 3+ digits are typed.
+  const suggestions = suggestZips(value);
+  const showList = open && suggestions.length > 0 && value.length < 5;
+
   return (
     <Field id={id} label={label} error={error}>
-      <Input
-        id={id}
-        inputMode="numeric"
-        autoComplete="postal-code"
-        placeholder={placeholder}
-        maxLength={5}
-        value={value}
-        onChange={(e) => onChange(e.target.value.replace(/\D/g, ""))}
-        aria-invalid={!!error}
-        aria-describedby={error ? `${id}-error` : undefined}
-        className="h-12"
-      />
+      <div className="relative">
+        <Input
+          id={id}
+          inputMode="numeric"
+          autoComplete="off"
+          role="combobox"
+          aria-expanded={showList}
+          aria-controls={`${id}-list`}
+          placeholder={placeholder}
+          maxLength={5}
+          value={value}
+          onChange={(e) => {
+            onChange(e.target.value.replace(/\D/g, ""));
+            setOpen(true);
+          }}
+          onFocus={() => setOpen(true)}
+          onBlur={() => setOpen(false)}
+          aria-invalid={!!error}
+          aria-describedby={error ? `${id}-error` : undefined}
+          className="h-12"
+        />
+        {showList && (
+          <ul
+            id={`${id}-list`}
+            role="listbox"
+            className="absolute z-20 mt-1 w-full overflow-hidden rounded-lg border border-border bg-popover shadow-md"
+          >
+            {suggestions.map((s) => (
+              <li key={s.zip} role="option" aria-selected={value === s.zip}>
+                <button
+                  type="button"
+                  // mousedown fires before blur — keep the list alive for the click
+                  onMouseDown={(e) => e.preventDefault()}
+                  onClick={() => {
+                    onChange(s.zip);
+                    setOpen(false);
+                  }}
+                  className="flex w-full items-center justify-between gap-2 px-3 py-2.5 text-left text-sm hover:bg-accent"
+                >
+                  <span className="font-semibold text-foreground">{s.zip}</span>
+                  <span className="text-muted-foreground">
+                    {s.city}, {s.state}
+                  </span>
+                </button>
+              </li>
+            ))}
+          </ul>
+        )}
+      </div>
     </Field>
   );
 }
@@ -90,25 +126,27 @@ export function VehicleField({
   onChange: (v: string) => void;
 }) {
   const id = useId();
+  // Native <select>: bulletproof + accessible on every device. (Radix's portal
+  // was unreliable inside the deferred-hydration island for a simple enum.)
   return (
     <Field id={id} label="Vehicle type" error={error}>
-      <Select value={value} onValueChange={onChange}>
-        <SelectTrigger
-          id={id}
-          className="!h-12 w-full"
-          aria-invalid={!!error}
-          aria-describedby={error ? `${id}-error` : undefined}
-        >
-          <SelectValue placeholder="Select a vehicle" />
-        </SelectTrigger>
-        <SelectContent>
-          {VEHICLE_TYPES.map((v) => (
-            <SelectItem key={v} value={v}>
-              {VEHICLE_LABELS[v]}
-            </SelectItem>
-          ))}
-        </SelectContent>
-      </Select>
+      <select
+        id={id}
+        value={value}
+        onChange={(e) => onChange(e.target.value)}
+        aria-invalid={!!error}
+        aria-describedby={error ? `${id}-error` : undefined}
+        className={`h-12 w-full appearance-none rounded-lg border border-input bg-transparent bg-[length:1.25rem] bg-[right_0.75rem_center] bg-no-repeat px-3 pr-10 text-sm outline-none focus-visible:border-ring focus-visible:ring-[3px] focus-visible:ring-ring/50 aria-invalid:border-destructive aria-invalid:ring-[3px] aria-invalid:ring-destructive/20 ${value ? "text-foreground" : "text-muted-foreground"} bg-[url('data:image/svg+xml;utf8,<svg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 24 24%22 fill=%22none%22 stroke=%22%23475569%22 stroke-width=%222%22 stroke-linecap=%22round%22 stroke-linejoin=%22round%22><path d=%22m6 9 6 6 6-6%22/></svg>')]`}
+      >
+        <option value="" disabled>
+          Select a vehicle
+        </option>
+        {VEHICLE_TYPES.map((v) => (
+          <option key={v} value={v} className="text-foreground">
+            {VEHICLE_LABELS[v]}
+          </option>
+        ))}
+      </select>
     </Field>
   );
 }
