@@ -1,20 +1,16 @@
 ---
-// Static support/chat placeholder — NOT a React island, no hydration.
-// Uses native <details> for open/close (zero JS). Desktop: a prompt card open
-// by default (collapsible). Mobile: a tappable bubble that expands, sitting
-// above the sticky CTA bar. Clearly a placeholder — links to call/email, no
-// real chat backend.
-const EMAIL = "hello@straightaway.example";
-const PHONE = "(888) 555-0142";
+// Static support/chat widget — NOT a React island, no hydration.
+// Open/close via native <details> (zero JS). The chat itself is a SIMULATION:
+// a tiny vanilla script appends canned agent replies. No real backend.
+// Desktop: a prompt card open by default. Mobile: a tappable bubble that expands
+// above the sticky CTA bar.
+import ChatPanel from "@/components/ChatPanel.astro";
 ---
 
 <!-- Desktop: open-by-default prompt card (collapsible, no JS) -->
-<details
-  open
-  class="group fixed right-6 bottom-6 z-40 hidden w-[20rem] lg:block"
->
+<details open class="group fixed right-6 bottom-6 z-40 hidden w-[20rem] lg:block">
   <summary
-    class="flex cursor-pointer list-none items-center justify-between gap-2 rounded-t-2xl rounded-b-2xl border border-border bg-navy px-4 py-3 text-sm font-semibold text-white shadow-lg group-open:rounded-b-none"
+    class="flex cursor-pointer list-none items-center justify-between gap-2 rounded-2xl border border-border bg-navy px-4 py-3 text-sm font-semibold text-white shadow-lg group-open:rounded-b-none"
   >
     <span class="flex items-center gap-2">
       <span class="relative flex size-2.5">
@@ -28,23 +24,7 @@ const PHONE = "(888) 555-0142";
     </svg>
   </summary>
   <div class="rounded-b-2xl border border-t-0 border-border bg-card p-4 shadow-lg">
-    <p class="text-sm text-muted-foreground">
-      Real people, typically reply in ~2 minutes. Having trouble with your quote? We're here.
-    </p>
-    <div class="mt-3 flex flex-col gap-2">
-      <a
-        href={`mailto:${EMAIL}`}
-        class="flex h-10 items-center justify-center rounded-md bg-cta text-sm font-semibold text-cta-foreground transition-transform motion-safe:hover:-translate-y-0.5"
-      >
-        Start a chat
-      </a>
-      <a
-        href={`tel:+18885550142`}
-        class="flex h-10 items-center justify-center rounded-md border border-border text-sm font-semibold text-navy"
-      >
-        Or call {PHONE}
-      </a>
-    </div>
+    <ChatPanel />
   </div>
 </details>
 
@@ -58,24 +38,52 @@ const PHONE = "(888) 555-0142";
       <path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"></path>
     </svg>
   </summary>
-  <div class="w-[16rem] rounded-2xl border border-border bg-card p-4 shadow-xl">
-    <p class="text-sm font-semibold text-navy">Chat with our team</p>
-    <p class="mt-1 text-sm text-muted-foreground">
-      Tap to chat, or if you're having trouble with your quote we'll help you finish it.
-    </p>
-    <div class="mt-3 flex flex-col gap-2">
-      <a
-        href={`mailto:${EMAIL}`}
-        class="flex h-10 items-center justify-center rounded-md bg-cta text-sm font-semibold text-cta-foreground"
-      >
-        Start a chat
-      </a>
-      <a
-        href={`tel:+18885550142`}
-        class="flex h-10 items-center justify-center rounded-md border border-border text-sm font-semibold text-navy"
-      >
-        Call {PHONE}
-      </a>
-    </div>
+  <div class="w-[18rem] max-w-[calc(100vw-2rem)] rounded-2xl border border-border bg-card p-4 shadow-xl">
+    <ChatPanel />
   </div>
 </details>
+
+<script>
+  // Chat SIMULATION (progressive enhancement, not a React island): echo the
+  // user's message and append a canned agent reply. Wires every chat panel.
+  function cannedReply(msg: string): string {
+    const m = msg.toLowerCase();
+    if (m.includes("price") || m.includes("cost") || m.includes("quote"))
+      return "Happy to help with pricing! Drop your pickup and delivery ZIPs into the quote form above and I'll get you a real number in about two minutes.";
+    if (m.includes("track"))
+      return "You'll get real-time tracking once your car is picked up — I can text you the link. Which shipment are you asking about?";
+    if (m.includes("insur") || m.includes("safe"))
+      return "Every carrier we match is fully insured in transit, with cargo coverage door to door. Want me to pull a quote so you can see the details?";
+    return "Great question! A specialist will follow up shortly. Meanwhile you can grab an instant quote with the form above, or call us at (888) 555-0142.";
+  }
+
+  function bubble(text: string, who: "user" | "agent"): HTMLParagraphElement {
+    const p = document.createElement("p");
+    p.textContent = text;
+    p.className =
+      who === "user"
+        ? "ml-auto max-w-[85%] rounded-2xl rounded-tr-sm bg-navy px-3 py-2 text-sm text-white"
+        : "max-w-[85%] rounded-2xl rounded-tl-sm bg-muted px-3 py-2 text-sm text-foreground";
+    return p;
+  }
+
+  document.querySelectorAll<HTMLFormElement>("[data-chat-form]").forEach((form) => {
+    const panel = form.parentElement;
+    const log = panel?.querySelector<HTMLElement>("[data-chat-log]");
+    const input = form.querySelector<HTMLInputElement>("[data-chat-input]");
+    if (!log || !input) return;
+
+    form.addEventListener("submit", (e) => {
+      e.preventDefault();
+      const msg = input.value.trim();
+      if (!msg) return;
+      log.appendChild(bubble(msg, "user"));
+      input.value = "";
+      log.scrollTop = log.scrollHeight;
+      window.setTimeout(() => {
+        log.appendChild(bubble(cannedReply(msg), "agent"));
+        log.scrollTop = log.scrollHeight;
+      }, 700);
+    });
+  });
+</script>
