@@ -49,8 +49,10 @@ mock-ping-post.mjs  (:9000)  ←────────────────
 - **`src/lib/lead.ts`** — shared lead shape + `validateLead()`. Used for client-side field hints;
   enforced authoritatively on the server.
 - **`src/pages/api/lead.ts`** — the only thing that talks to the mock. Validate → `/ping` → `/post`.
-- **`src/components/QuoteWizard.tsx`** — the single React island (`client:idle`). Everything else is
-  static server-rendered HTML.
+- **`src/components/QuoteForm.tsx`** — the single React island (`client:idle`); renders the A/B variant
+  chosen server-side. Variants live in `src/components/quote/` (shared `useLeadForm` hook + `fields`,
+  `SteppedQuoteForm` = A, `SingleQuoteForm` = B). Everything else is static server-rendered HTML.
+- **`src/lib/experiment.ts`** — sticky 50/50 variant assignment. See [`docs/AB-TESTING.md`](docs/AB-TESTING.md).
 
 ---
 
@@ -110,8 +112,10 @@ is Geist sans. No hero photo — it would cost mobile LCP for no conversion gain
 **Cut for time:** address autocomplete / ZIP-to-city echo, inline price-range teaser before submit,
 animated step transitions, real review-platform widgets (the Trustpilot/ratings are placeholders).
 
-**Next:** server-validated ZIP→city lookup so step 1 confirms the route back to the user; an A/B test
-on a single-step vs. 2-step form; replace placeholder trust numbers with real review-platform widgets.
+**Next:** server-validated ZIP→city lookup so step 1 confirms the route back to the user; replace
+placeholder trust numbers with real review-platform widgets. A **first A/B test is already wired** —
+2-step vs. single-step form, server-side split, no flicker — see
+[`docs/AB-TESTING.md`](docs/AB-TESTING.md). Try `?v=a` / `?v=b` to force a variant.
 
 ### 2. React island vs. static Astro — and the cost of hydrating the form
 

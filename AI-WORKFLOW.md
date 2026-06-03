@@ -10,6 +10,7 @@ prompts that actually moved the work.
 | **Claude Code (Opus 4.8)** | Scaffolding, all code, the API route, docs drafts, build verification. |
 | `npm create astro` / `astro add` / `shadcn init` | Scaffolding the exact stack (Astro 6 SSR, React 19, Tailwind v4 Vite plugin, shadcn radix-nova). |
 | `curl` against the running SSR server | Smoke-testing the happy path end-to-end (`/api/lead` → mock `/ping` → `/post`) and confirming only one island hydrates. |
+| **Subagents** (Claude Code Agent tool) | Building the two A/B form variants in parallel-ish, each from a tight spec against a shared hook + field parts. |
 
 ## Delegated vs. owned
 
@@ -50,6 +51,24 @@ prompts that actually moved the work.
 This is where I steered the design — Claude adapted the Insurify reference into on-domain
 auto-transport copy and used invented carrier names instead of real logos (which would have been
 deceptive).
+
+**3a. The A/B show-off** — I asked for an experiment to demonstrate orchestration and CRO thinking:
+
+> This is a take-home, so there's room to show off: agents work to create two variants; present the
+> A/B mindset.
+
+How it was run: Claude first extracted the shared form logic into a `useLeadForm` hook + field parts
+(so the variants couldn't drift), **then spawned one subagent per variant** — each given the shared
+APIs and a tight layout spec — to build the 2-step (control) and single-step (challenger) forms. I
+chose the tested variable (form friction) and the server-side, no-flicker assignment approach; the
+agents only wrote the two layouts. See [`docs/AB-TESTING.md`](docs/AB-TESTING.md).
+
+### A note on orchestration
+
+The agents were spawned **sequentially**, not in parallel, on purpose — my global operating rules
+require one tool call to fully resolve before the next. For two small, well-specified components the
+cost of that is negligible. The real win wasn't parallelism; it was **isolation**: each variant was
+built against the same contract without one bleeding into the other.
 
 **3. The contract for the ping-post route** (from the brief — drove `src/pages/api/lead.ts`):
 
