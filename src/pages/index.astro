@@ -33,14 +33,34 @@ const steps = [
 
 const badges = ["Fully insured in transit", "FMCSA licensed", "USDOT registered", "BBB accredited"];
 
-// Invented carrier names — NOT real brands. Real logos would imply partnerships
-// we don't have; these are clearly Straightaway's own demo network.
-const carriers = [
-  "RoadRunner Auto",
-  "TransGlobal Freight",
-  "Apex Carriers",
-  "MetroMove",
-  "Summit Auto Haul",
+// "What makes us different" — confidence features. icon = inline svg key (below).
+const features = [
+  {
+    icon: "lock",
+    title: "Secure payments",
+    body: "Your payment is held safely until your vehicle is delivered — you stay in control of your money the whole way.",
+  },
+  {
+    icon: "shield",
+    title: "Protected on every mile",
+    body: "Every shipment is covered by carrier cargo insurance, with straightforward claims if anything isn't right.",
+  },
+  {
+    icon: "route",
+    title: "Track your shipment",
+    body: "Real-time status updates let you follow your car from pickup to drop-off — no guessing where it is.",
+  },
+];
+
+// Invented partner names — NOT real brands. Real logos (eBay, Etsy, etc.) would
+// imply partnerships we don't have. Varied type treatments fake a logo wall.
+const partners = [
+  { name: "AutoBay", class: "font-extrabold tracking-tight" },
+  { name: "Wheelhouse", class: "font-serif" },
+  { name: "shiftly", class: "font-extrabold lowercase tracking-tight" },
+  { name: "Caravan", class: "font-serif italic" },
+  { name: "FleetTMS", class: "font-semibold tracking-wide" },
+  { name: "RELOMOVE", class: "font-semibold tracking-[0.2em]" },
 ];
 
 const testimonials = [
@@ -180,19 +200,18 @@ const faqs = [
       </div>
     </section>
 
-    <!-- Carrier network logo strip -->
-    <section class="border-y border-border bg-card">
-      <div class="mx-auto max-w-6xl px-4 py-6">
-        <p class="text-center text-xs font-semibold tracking-wide text-muted-foreground uppercase">
-          Carriers in our network
+    <!-- Trusted-by partner strip — continues the navy hero band, then page goes light -->
+    <section class="border-t border-white/10 bg-navy">
+      <div class="mx-auto max-w-6xl px-4 py-9">
+        <p class="text-center text-xs font-bold tracking-[0.2em] text-white/55 uppercase">
+          Trusted by the best
         </p>
-        <ul class="mt-4 flex flex-wrap items-center justify-center gap-x-8 gap-y-3 sm:gap-x-12">
+        <ul class="mt-6 flex flex-wrap items-center justify-center gap-x-10 gap-y-5 sm:gap-x-14">
           {
-            carriers.map((c) => (
-              <li class="text-base font-bold tracking-tight text-navy/70 sm:text-lg">{c}</li>
+            partners.map((p) => (
+              <li class={`text-xl text-white/85 sm:text-2xl ${p.class}`}>{p.name}</li>
             ))
           }
-          <li class="text-sm font-semibold text-muted-foreground">120+ more</li>
         </ul>
       </div>
     </section>
@@ -248,6 +267,58 @@ const faqs = [
           ))
         }
       </ol>
+    </section>
+
+    <!-- What makes us different -->
+    <section class="border-y border-border bg-[#f4f6f9]">
+      <div class="mx-auto max-w-6xl px-4 py-16 text-center">
+        <h2 class="text-3xl font-bold tracking-tight text-foreground sm:text-4xl">
+          What makes us different
+        </h2>
+        <p class="mx-auto mt-3 max-w-2xl text-muted-foreground">
+          From your first quote to final delivery, Straightaway gives you the tools and support to
+          ship with total confidence — whether it's your first car or your fiftieth.
+        </p>
+        <div class="mt-12 grid gap-8 text-left sm:grid-cols-3">
+          {
+            features.map((f) => (
+              <div>
+                <div class="flex size-12 items-center justify-center rounded-xl bg-navy/10 text-navy">
+                  <svg viewBox="0 0 24 24" class="size-6" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+                    {f.icon === "lock" && (
+                      <>
+                        <rect x="3" y="11" width="18" height="11" rx="2" />
+                        <path d="M7 11V7a5 5 0 0 1 10 0v4" />
+                      </>
+                    )}
+                    {f.icon === "shield" && (
+                      <>
+                        <path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10Z" />
+                        <path d="m9 12 2 2 4-4" />
+                      </>
+                    )}
+                    {f.icon === "route" && (
+                      <>
+                        <circle cx="6" cy="19" r="3" />
+                        <circle cx="18" cy="5" r="3" />
+                        <path d="M9 19h6a3 3 0 0 0 3-3V8" />
+                      </>
+                    )}
+                  </svg>
+                </div>
+                <h3 class="mt-4 text-lg font-semibold text-foreground">{f.title}</h3>
+                <p class="mt-1.5 text-sm text-muted-foreground">{f.body}</p>
+              </div>
+            ))
+          }
+        </div>
+        <a
+          href="#top"
+          class="mt-12 inline-flex h-12 items-center rounded-md bg-cta px-8 font-semibold text-cta-foreground transition hover:bg-cta-hover motion-safe:hover:-translate-y-0.5"
+        >
+          Get shipping quotes
+        </a>
+      </div>
     </section>
 
     <!-- Methodology / trust -->
