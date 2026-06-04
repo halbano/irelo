@@ -38,7 +38,17 @@ import ChatPanel from "@/components/ChatPanel.astro";
       <path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"></path>
     </svg>
   </summary>
-  <div class="w-[18rem] max-w-[calc(100vw-2rem)] rounded-2xl border border-border bg-card p-4 shadow-xl">
+  <div class="relative w-[18rem] max-w-[calc(100vw-2rem)] rounded-2xl border border-border bg-card p-4 shadow-xl">
+    <button
+      type="button"
+      data-chat-close
+      aria-label="Minimize chat"
+      class="absolute top-2.5 right-2.5 z-10 flex size-7 items-center justify-center rounded-full text-muted-foreground hover:bg-muted"
+    >
+      <svg viewBox="0 0 24 24" class="size-4" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+        <path d="M18 6 6 18M6 6l12 12"></path>
+      </svg>
+    </button>
     <ChatPanel />
   </div>
 </details>
@@ -66,6 +76,14 @@ import ChatPanel from "@/components/ChatPanel.astro";
         : "max-w-[85%] rounded-2xl rounded-tl-sm bg-muted px-3 py-2 text-sm text-foreground";
     return p;
   }
+
+  // Minimize: collapse the parent <details> (mobile has no visible summary when open).
+  document.querySelectorAll<HTMLButtonElement>("[data-chat-close]").forEach((btn) => {
+    btn.addEventListener("click", () => {
+      const details = btn.closest("details");
+      if (details) details.open = false;
+    });
+  });
 
   // "Start a chat" swaps the intro buttons for the conversation view.
   document.querySelectorAll<HTMLButtonElement>("[data-chat-start]").forEach((btn) => {
