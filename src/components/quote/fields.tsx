@@ -146,7 +146,7 @@ export function ZipPair({
       />
       {/* Mirror the field's label + gap + input height so the badge lands dead-center on the input row */}
       <div className="flex flex-col">
-        <span className="text-sm leading-none font-medium opacity-0 select-none" aria-hidden>
+        <span className="text-sm font-medium opacity-0 select-none" aria-hidden>
           .
         </span>
         <div className="mt-1.5 flex h-12 items-center justify-center">
