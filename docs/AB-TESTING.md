@@ -65,6 +65,34 @@ Server-side, sticky, 50/50 — see [`src/lib/experiment.ts`](../src/lib/experime
   the test; once it's called, delete the loser and fold the winner back into one path. Don't leave dead
   variants accruing.
 
+## What to test next (prioritization)
+
+The current experiment is structural (step count) — useful as a proof of the harness, but the **least
+interesting lever**. In practice, **content variants usually move volume more than structural
+micro-changes**, and they're cheaper and lower-risk to run. Priority order:
+
+1. **Content (highest leverage).** Headline / value-prop framing (price-savings vs. speed vs. trust),
+   CTA copy ("Get my quote" vs. "See my price"), hero subhead, which trust signals lead. The plumbing
+   here is **content-agnostic** — the sticky cookie split and `experiment`/`variant` attribution work
+   the same whether the variants differ in copy or in layout, so a headline/CTA test needs **no new
+   infra**, just two server-rendered strings.
+2. **Field set / friction** — fewer fields → more submits, but lower lead quality (see below).
+3. **Structure** — pagination (the current test).
+
+### Candidate: minimal-capture form
+
+Hypothesis: a radically short form lifts submit rate.
+
+- **Mock-contract caveat.** `/ping` requires `originZip`, `destinationZip`, **and `vehicleType`** (it
+  400s without them). So a literal "origin + destination + email" form can't price. The leanest form
+  that still works end-to-end is **origin + destination + vehicle + email** (drop name, phone, ship
+  date). You also need at least one contact channel (email *or* phone) to act on the lead.
+- **Guardrail — quality, not just volume.** A shorter form that lifts submits but drops *closeable*
+  leads is a net loss. Measure submit rate **and** downstream lead quality (contactability, close
+  rate). Don't call it on submit rate alone.
+- **One variable.** A minimal-capture variant changes the *field set* — a different lever than the
+  step-count test — so run it as its own experiment, not bolted onto this one.
+
 ## Why this is safe to run on a conversion page
 
 No flicker (server-rendered), no added client JS for assignment, no third-party experiment SDK loading
