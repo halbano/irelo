@@ -45,7 +45,7 @@ Server-side, sticky, 50/50 — see [`src/lib/experiment.ts`](../src/lib/experime
 - **Primary:** lead-submit rate = `lead_submitted` / `experiment_exposure`, per variant. This is the
   decision metric.
 - **Guardrail:** we don't ship a variant that wins on submits but tanks quality. Watch validation-
-  error rate and (downstream) the contact-reachability of submitted leads — a single-step form could
+  error rate and (downstream) the contact-reachability of submitted leads — a faster/leaner form could
   lift submits while lowering data quality.
 - **Instrumentation:** both events are emitted with `experiment` + `variant`
   ([`src/lib/track.ts`](../src/lib/track.ts)) — exposure on page render, conversion in the lead route

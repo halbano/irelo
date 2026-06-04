@@ -58,9 +58,10 @@ auto-transport copy and used invented carrier names instead of real logos.
 
 How it was run: Claude first extracted the shared form logic into a `useLeadForm` hook + field parts
 (so the variants couldn't drift), **then spawned one subagent per variant** — each given the shared
-APIs and a tight layout spec — to build the 2-step (control) and single-step (challenger) forms. I
-chose the tested variable (form friction) and the server-side, no-flicker assignment approach; the
-agents only wrote the two layouts. See [`docs/AB-TESTING.md`](docs/AB-TESTING.md).
+APIs and a tight layout spec — to build the 2-step (control) and single-step (challenger) forms (the
+challenger was later reworked into an email-first 2-step variant). I chose the tested variable and the
+server-side, no-flicker assignment approach; the agents only wrote the two layouts. See
+[`docs/AB-TESTING.md`](docs/AB-TESTING.md).
 
 ### A note on orchestration
 

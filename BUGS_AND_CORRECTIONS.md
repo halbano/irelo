@@ -29,6 +29,8 @@ owner. **Non-issue** = reported but not a code defect.
 | 21 | Correction | Easier way back to step 1 | Step-2 stepper is now a back control, and the text "Back" became an arrow-icon button beside the CTA. Also switched the island to `client:load` (it's the hero) for immediate interactivity. |
 | 22 | Correction | Ship date: removed from both variants, then **restored** | Owner removed it from A, then B (clean one-variable A/B), then asked to add it back to both (the deletion was a mistake). Re-added as a required step-1 field; both variants identical again. |
 | 23 | Correction | Remove the simulated ZIP autocomplete | Dropped the client-side suggestions (and `src/lib/zips.ts`) to cut complexity in the timeframe — a fake lookup added island state for no real value. ZipField is a plain input again. The genuinely valuable version (type city/state → assisted ZIP, server-side) is captured as a README follow-up. |
+| 24 | Correction | Redefine Variant B (was single-step) | B is now an **email-first 2-step** form (step 1 = route + vehicle + email; step 2 = date + name + phone) plus **different hero copy** — a combined field-order + copy variant. Renamed `SingleQuoteForm` → `EmailFirstQuoteForm`. Submission path is unchanged/shared (one `useLeadForm.submit` → `/api/lead`), so both variants follow the same spec ping→post flow. |
+| 25 | Cleanup | Naming + dead-code audit | Fixed stale references in docs (`QuoteWizard`→`QuoteForm`, `client:idle`→`client:load`, single-step→email-first); removed orphaned `ui/select.tsx` (replaced by native select). Confirmed no draft/review annotations in code. |
 
 ## Notes on how bugs were caught
 
