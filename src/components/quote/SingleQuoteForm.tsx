@@ -9,6 +9,7 @@ import {
   DateField,
   EmailHint,
   FormError,
+  PhoneField,
   QuoteResult,
   TextField,
   TrustLine,
@@ -101,11 +102,7 @@ export default function SingleQuoteForm({ variant = "b" }: { variant?: string })
           onChange={(v) => set("email", v)}
         />
 
-        <TextField
-          label="Phone"
-          type="tel"
-          autoComplete="tel"
-          placeholder="(555) 123-4567"
+        <PhoneField
           value={values.phone}
           error={errors.phone}
           onChange={(v) => set("phone", v)}

@@ -19,17 +19,20 @@ function Field({
   error,
   children,
   hint,
+  labelSuffix,
 }: {
   id: string;
   label: string;
   error?: string;
   children: ReactNode;
   hint?: ReactNode;
+  labelSuffix?: ReactNode;
 }) {
   return (
     <div className="space-y-1.5">
-      <Label htmlFor={id} className="text-sm text-foreground">
+      <Label htmlFor={id} className="gap-1.5 text-sm text-foreground">
         {label}
+        {labelSuffix}
       </Label>
       {children}
       {hint}
@@ -207,6 +210,53 @@ export function TextField({
         placeholder={placeholder}
         value={value}
         onChange={(e) => onChange(e.target.value)}
+        aria-invalid={!!error}
+        aria-describedby={error ? `${id}-error` : undefined}
+        className="h-12"
+      />
+    </Field>
+  );
+}
+
+/** Progressive US phone mask: "5551234567" -> "(555) 123-4567". */
+export function formatPhone(input: string): string {
+  const d = input.replace(/\D/g, "").slice(0, 10);
+  if (d.length === 0) return "";
+  if (d.length < 4) return `(${d}`;
+  if (d.length < 7) return `(${d.slice(0, 3)}) ${d.slice(3)}`;
+  return `(${d.slice(0, 3)}) ${d.slice(3, 6)}-${d.slice(6)}`;
+}
+
+export function PhoneField({
+  value,
+  error,
+  onChange,
+}: {
+  value: string;
+  error?: string;
+  onChange: (v: string) => void;
+}) {
+  const id = useId();
+  return (
+    <Field
+      id={id}
+      label="Phone"
+      error={error}
+      labelSuffix={<span className="font-normal text-muted-foreground">(optional)</span>}
+      hint={
+        <p className="text-xs text-muted-foreground">
+          Optional — add it and a carrier can text you pickup updates.
+        </p>
+      }
+    >
+      <Input
+        id={id}
+        type="tel"
+        inputMode="tel"
+        autoComplete="tel"
+        placeholder="(555) 123-4567"
+        value={value}
+        onChange={(e) => onChange(formatPhone(e.target.value))}
         aria-invalid={!!error}
         aria-describedby={error ? `${id}-error` : undefined}
         className="h-12"

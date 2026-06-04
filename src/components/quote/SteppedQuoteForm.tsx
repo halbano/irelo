@@ -7,6 +7,7 @@ import {
   ZipField,
   VehicleField,
   TextField,
+  PhoneField,
   EmailHint,
   ContactReassurance,
   WhyZipExpander,
@@ -104,11 +105,7 @@ export default function SteppedQuoteForm({ variant = "a" }: { variant?: string }
             onChange={(v) => set("email", v)}
           />
 
-          <TextField
-            label="Phone"
-            type="tel"
-            autoComplete="tel"
-            placeholder="(555) 123-4567"
+          <PhoneField
             value={values.phone}
             error={errors.phone}
             onChange={(v) => set("phone", v)}
