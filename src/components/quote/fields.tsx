@@ -1,5 +1,5 @@
 import { useId, useState, type ReactNode } from "react";
-import { HelpCircle, Lock, ShieldCheck, Star, CheckCircle2 } from "lucide-react";
+import { HelpCircle, Lock, ShieldCheck, Star, CheckCircle2, ArrowLeft } from "lucide-react";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { VEHICLE_TYPES, type LeadInput } from "@/lib/lead";
@@ -326,15 +326,31 @@ export function FormError({ message }: { message: string }) {
   );
 }
 
-export function ProgressPips({ step }: { step: 1 | 2 }) {
+export function ProgressPips({ step, onBack }: { step: 1 | 2; onBack?: () => void }) {
   const label = step === 1 ? "Step 1 of 2 · Route & vehicle" : "Step 2 of 2 · Contact";
+  const pips = (
+    <div className="mt-1.5 flex gap-1.5" aria-hidden>
+      <span className="h-1.5 w-8 rounded-full bg-navy" />
+      <span className={`h-1.5 w-8 rounded-full ${step === 2 ? "bg-navy" : "bg-border"}`} />
+    </div>
+  );
+
+  // On step 2 the stepper itself is a "back" control.
+  if (step === 2 && onBack) {
+    return (
+      <button type="button" onClick={onBack} className="group text-left" aria-label="Back to step 1">
+        <p className="flex items-center gap-1 text-xs font-semibold tracking-wide text-muted-foreground uppercase group-hover:text-navy">
+          <ArrowLeft className="size-3.5" aria-hidden /> {label}
+        </p>
+        {pips}
+      </button>
+    );
+  }
+
   return (
     <div>
       <p className="text-xs font-semibold tracking-wide text-muted-foreground uppercase">{label}</p>
-      <div className="mt-1.5 flex gap-1.5" aria-hidden>
-        <span className="h-1.5 w-8 rounded-full bg-navy" />
-        <span className={`h-1.5 w-8 rounded-full ${step === 2 ? "bg-navy" : "bg-border"}`} />
-      </div>
+      {pips}
     </div>
   );
 }

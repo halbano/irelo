@@ -202,7 +202,7 @@ const faqs = [
 
         <!-- Form island — the only hydrated component on the page (A/B variant set server-side) -->
         <div class="lg:col-start-2 lg:row-span-2 lg:row-start-1" data-variant={variant}>
-          <QuoteForm variant={variant} client:idle />
+          <QuoteForm variant={variant} client:load />
           <!-- Trustpilot placeholder (no outbound link — clearly a placeholder) -->
           <div class="mt-3 flex items-center justify-center gap-2 text-sm text-white/70">
             <span class="flex" aria-hidden="true">
