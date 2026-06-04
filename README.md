@@ -112,10 +112,18 @@ is Geist sans. No hero photo — it would cost mobile LCP for no conversion gain
 **Cut for time:** address autocomplete / ZIP-to-city echo, inline price-range teaser before submit,
 animated step transitions, real review-platform widgets (the Trustpilot/ratings are placeholders).
 
-**Next:** server-validated ZIP→city lookup so step 1 confirms the route back to the user; replace
-placeholder trust numbers with real review-platform widgets. A **first A/B test is already wired** —
-2-step vs. single-step form, server-side split, no flicker — see
+**Next:** replace placeholder trust numbers with real review-platform widgets. A **first A/B test is
+already wired** — 2-step vs. single-step form, server-side split, no flicker — see
 [`docs/AB-TESTING.md`](docs/AB-TESTING.md). Try `?v=a` / `?v=b` to force a variant.
+
+**UX improvement follow-up — assisted location → ZIP (the real win):** let a user type a city or state
+(`Chicago`, `IL`, `CH`) and get assisted with the matching ZIP, instead of having to know the 5-digit
+code. This is the genuinely valuable version of "ZIP help" — most people know their city, not their
+ZIP. It belongs **server-side** (a real geocoding/ZIP API behind our own route, debounced, validated),
+not as a client-side simulation. I built a quick simulated client-side ZIP autocomplete during the
+spike and then **removed it** — a fake lookup adds island complexity and state for no real value in
+this timeframe, and the honest version is a backend integration. Tracked here as the follow-up to do
+properly rather than fake.
 
 ### 2. React island vs. static Astro — and the cost of hydrating the form
 

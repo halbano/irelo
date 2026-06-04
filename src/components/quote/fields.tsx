@@ -3,7 +3,6 @@ import { HelpCircle, Lock, ShieldCheck, Star, CheckCircle2, ArrowLeft, ArrowRigh
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { VEHICLE_TYPES, type LeadInput } from "@/lib/lead";
-import { suggestZips } from "@/lib/zips";
 
 export const VEHICLE_LABELS: Record<string, string> = {
   car: "Car",
@@ -59,62 +58,20 @@ export function ZipField({
   onChange: (v: string) => void;
 }) {
   const id = useId();
-  const [open, setOpen] = useState(false);
-  // Simulated lookup: suggestions appear once 3+ digits are typed.
-  const suggestions = suggestZips(value);
-  const showList = open && suggestions.length > 0 && value.length < 5;
-
   return (
     <Field id={id} label={label} error={error}>
-      <div className="relative">
-        <Input
-          id={id}
-          inputMode="numeric"
-          autoComplete="off"
-          role="combobox"
-          aria-expanded={showList}
-          aria-controls={`${id}-list`}
-          placeholder={placeholder}
-          maxLength={5}
-          value={value}
-          onChange={(e) => {
-            onChange(e.target.value.replace(/\D/g, ""));
-            setOpen(true);
-          }}
-          onFocus={() => setOpen(true)}
-          onBlur={() => setOpen(false)}
-          aria-invalid={!!error}
-          aria-describedby={error ? `${id}-error` : undefined}
-          className="h-12"
-        />
-        {showList && (
-          <ul
-            id={`${id}-list`}
-            role="listbox"
-            className="absolute z-20 mt-1 w-full overflow-hidden rounded-lg border border-border bg-popover shadow-md"
-          >
-            {suggestions.map((s) => (
-              <li key={s.zip} role="option" aria-selected={value === s.zip}>
-                <button
-                  type="button"
-                  // mousedown fires before blur — keep the list alive for the click
-                  onMouseDown={(e) => e.preventDefault()}
-                  onClick={() => {
-                    onChange(s.zip);
-                    setOpen(false);
-                  }}
-                  className="flex w-full items-center justify-between gap-2 px-3 py-2.5 text-left text-sm hover:bg-accent"
-                >
-                  <span className="font-semibold text-foreground">{s.zip}</span>
-                  <span className="text-muted-foreground">
-                    {s.city}, {s.state}
-                  </span>
-                </button>
-              </li>
-            ))}
-          </ul>
-        )}
-      </div>
+      <Input
+        id={id}
+        inputMode="numeric"
+        autoComplete="postal-code"
+        placeholder={placeholder}
+        maxLength={5}
+        value={value}
+        onChange={(e) => onChange(e.target.value.replace(/\D/g, ""))}
+        aria-invalid={!!error}
+        aria-describedby={error ? `${id}-error` : undefined}
+        className="h-12"
+      />
     </Field>
   );
 }
@@ -323,7 +280,7 @@ export function EmailHint() {
 export function ContactReassurance() {
   return (
     <p className="rounded-lg bg-muted px-3 py-2.5 text-sm text-muted-foreground">
-      We only use this to match you with verified carriers — no spam, no reselling your details.
+      We only use this to match you with verified carriers
     </p>
   );
 }

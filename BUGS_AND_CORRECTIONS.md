@@ -28,6 +28,7 @@ owner. **Non-issue** = reported but not a code defect.
 | 20 | **Bug** | **"Failed to fetch" on submit** | The route's upstream `/ping`+`/post` calls weren't wrapped, so an unreachable mock threw unhandled and the client saw a raw fetch failure. Wrapped them → clean 502 JSON the form renders as a real message. (Also: run the mock on :9000.) |
 | 21 | Correction | Easier way back to step 1 | Step-2 stepper is now a back control, and the text "Back" became an arrow-icon button beside the CTA. Also switched the island to `client:load` (it's the hero) for immediate interactivity. |
 | 22 | Correction | Ship date: removed from both variants, then **restored** | Owner removed it from A, then B (clean one-variable A/B), then asked to add it back to both (the deletion was a mistake). Re-added as a required step-1 field; both variants identical again. |
+| 23 | Correction | Remove the simulated ZIP autocomplete | Dropped the client-side suggestions (and `src/lib/zips.ts`) to cut complexity in the timeframe — a fake lookup added island state for no real value. ZipField is a plain input again. The genuinely valuable version (type city/state → assisted ZIP, server-side) is captured as a README follow-up. |
 
 ## Notes on how bugs were caught
 
