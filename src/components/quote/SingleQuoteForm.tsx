@@ -14,7 +14,7 @@ import {
   TrustLine,
   VehicleField,
   WhyZipExpander,
-  ZipField,
+  ZipPair,
 } from "./fields";
 
 /**
@@ -50,22 +50,14 @@ export default function SingleQuoteForm({ variant = "b" }: { variant?: string })
           <CallLink />
         </div>
 
-        <div className="grid grid-cols-2 gap-3">
-          <ZipField
-            label="From ZIP"
-            value={values.originZip}
-            error={errors.originZip}
-            placeholder="90001"
-            onChange={(v) => set("originZip", v)}
-          />
-          <ZipField
-            label="To ZIP"
-            value={values.destinationZip}
-            error={errors.destinationZip}
-            placeholder="10001"
-            onChange={(v) => set("destinationZip", v)}
-          />
-        </div>
+        <ZipPair
+          originZip={values.originZip}
+          destinationZip={values.destinationZip}
+          originError={errors.originZip}
+          destinationError={errors.destinationZip}
+          onOriginChange={(v) => set("originZip", v)}
+          onDestinationChange={(v) => set("destinationZip", v)}
+        />
 
         <WhyZipExpander />
 

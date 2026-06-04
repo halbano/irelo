@@ -1,5 +1,5 @@
 import { useId, useState, type ReactNode } from "react";
-import { HelpCircle, Lock, ShieldCheck, Star, CheckCircle2, ArrowLeft } from "lucide-react";
+import { HelpCircle, Lock, ShieldCheck, Star, CheckCircle2, ArrowLeft, ArrowRight } from "lucide-react";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { VEHICLE_TYPES, type LeadInput } from "@/lib/lead";
@@ -116,6 +116,53 @@ export function ZipField({
         )}
       </div>
     </Field>
+  );
+}
+
+/** From/To ZIP pair with a little connector arrow centered on the gap. */
+export function ZipPair({
+  originZip,
+  destinationZip,
+  originError,
+  destinationError,
+  onOriginChange,
+  onDestinationChange,
+}: {
+  originZip: string;
+  destinationZip: string;
+  originError?: string;
+  destinationError?: string;
+  onOriginChange: (v: string) => void;
+  onDestinationChange: (v: string) => void;
+}) {
+  return (
+    <div className="grid grid-cols-[1fr_auto_1fr] items-start gap-2">
+      <ZipField
+        label="From ZIP"
+        value={originZip}
+        error={originError}
+        placeholder="90001"
+        onChange={onOriginChange}
+      />
+      {/* Mirror the field's label + gap + input height so the badge lands dead-center on the input row */}
+      <div className="flex flex-col">
+        <span className="text-sm leading-none font-medium opacity-0 select-none" aria-hidden>
+          .
+        </span>
+        <div className="mt-1.5 flex h-12 items-center justify-center">
+          <span className="flex size-6 items-center justify-center rounded-full bg-navy text-white shadow-sm ring-4 ring-card">
+            <ArrowRight className="size-3.5" aria-hidden />
+          </span>
+        </div>
+      </div>
+      <ZipField
+        label="To ZIP"
+        value={destinationZip}
+        error={destinationError}
+        placeholder="10001"
+        onChange={onDestinationChange}
+      />
+    </div>
   );
 }
 
