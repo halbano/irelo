@@ -15,21 +15,21 @@ A directional, falsifiable hypothesis — not "let's see what happens." The coun
 (a 2-step flow *feels* shorter and front-loads the cheap fields), which is exactly why it's worth a
 test rather than an opinion.
 
-## The variable(s) — and an honest caveat
+## One variable
 
-The intended variable is **number of steps**. Same copy, same hero, same CTA color, same validation.
+The variants differ in **exactly one thing: number of steps.** Same fields, same copy, same hero,
+same validation, same CTA color. If we changed the headline *and* the form, a win wouldn't tell us
+which caused it. One variable = a clean causal read.
 
 | | Variant A (control) | Variant B (challenger) |
 | --- | --- | --- |
-| Layout | 2-step wizard (Shipment → Contact) | Single step, all fields on one card |
-| Progress UI | Step pips, Back/Continue | None |
-| Ship date | **dropped** (product call) | collected (optional) |
+| Layout | 2-step wizard (Route → Contact) | Single step, all fields on one card |
+| Progress UI | Step pips, back control | None |
+| Fields | — identical — | — identical — |
 
-**Caveat (be honest about it):** a later product decision removed the ship-date field from Variant A
-only. That means A and B now differ in **two** things — step count *and* whether ship date is asked.
-A clean experiment changes one variable, so as-is a win can't be cleanly attributed to pagination
-alone. Before calling this for real, either (a) drop ship date from B too, or (b) restore it in A — so
-the *only* difference is the step count again. Documenting it rather than hiding it.
+(History: ship date was briefly dropped from A only, which made it a two-variable test; it was then
+removed from B as well, restoring a clean single-variable comparison. Both variants collect the same
+fields — origin/destination ZIP, vehicle, name, email, optional phone.)
 
 ## Assignment
 
