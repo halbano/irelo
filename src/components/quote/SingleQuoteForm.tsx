@@ -40,7 +40,7 @@ export default function SingleQuoteForm({ variant = "b" }: { variant?: string })
       noValidate
       onSubmit={onSubmit}
       aria-busy={submitting}
-      className="rounded-2xl border border-border bg-card p-5 shadow-sm sm:p-6"
+      className="rounded-2xl border border-border bg-card p-5 text-foreground shadow-sm sm:p-6"
     >
       <div className="space-y-4">
         <div className="flex items-center justify-between gap-3">

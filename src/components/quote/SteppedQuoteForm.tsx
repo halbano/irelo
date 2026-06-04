@@ -1,5 +1,5 @@
 import { useState } from "react";
-import { Loader2 } from "lucide-react";
+import { Loader2, ArrowLeft } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { FORM_EXPERIMENT } from "@/lib/experiment";
 import { useLeadForm } from "./useLeadForm";
@@ -23,7 +23,7 @@ import {
  * in the shared useLeadForm hook and field parts.
  */
 export default function SteppedQuoteForm({ variant = "a" }: { variant?: string }) {
-  const { values, errors, status, submitError, result, set, validateFields, submit, submitting } =
+  const { values, errors, status, submitError, result, set, setErrors, validateFields, submit, submitting } =
     useLeadForm();
   const [step, setStep] = useState<1 | 2>(1);
 
@@ -31,6 +31,11 @@ export default function SteppedQuoteForm({ variant = "a" }: { variant?: string }
 
   const next = () => {
     if (validateFields(["originZip", "destinationZip", "vehicleType"])) setStep(2);
+  };
+
+  const goBack = () => {
+    setErrors({});
+    setStep(1);
   };
 
   const onSubmit = (e: React.FormEvent) => {
@@ -43,10 +48,10 @@ export default function SteppedQuoteForm({ variant = "a" }: { variant?: string }
       noValidate
       onSubmit={onSubmit}
       aria-busy={submitting}
-      className="rounded-2xl border border-border bg-card p-5 shadow-sm sm:p-6"
+      className="rounded-2xl border border-border bg-card p-5 text-foreground shadow-sm sm:p-6"
     >
       <div className="mb-4 flex items-center justify-between gap-3">
-        <ProgressPips step={step} />
+        <ProgressPips step={step} onBack={goBack} />
         <CallLink />
       </div>
 
@@ -129,11 +134,12 @@ export default function SteppedQuoteForm({ variant = "a" }: { variant?: string }
             <Button
               type="button"
               variant="outline"
-              onClick={() => setStep(1)}
+              onClick={goBack}
               disabled={submitting}
-              className="h-12 px-5"
+              aria-label="Back to step 1"
+              className="h-12 px-4"
             >
-              Back
+              <ArrowLeft className="size-5" aria-hidden />
             </Button>
             <Button
               type="submit"
