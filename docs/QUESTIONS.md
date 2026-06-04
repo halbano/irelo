@@ -25,6 +25,23 @@ Step 2 depends on step 1's `pingId`, so they're ordered, not merged. The browser
 single `/api/lead` request (invariant: the browser never calls the mock directly). Variant A and B are
 identical here — only the *form layout* differs, never the submission path.
 
+### Q: Is our server-side API route identical to the mock ping-post? If not, why?
+
+No — they're different layers.
+
+- **`mock-ping-post.mjs`** is the **upstream backend** (a stand-in for iRelo's real lead-distribution
+  system). It *receives* `/ping` and `/post` and owns the business logic — generating the price,
+  `pingId`, `leadId`, and simulating accept/reject/duplicate/slow. In production it's **replaced** by
+  the real iRelo backend.
+- **`src/pages/api/lead.ts`** is **our app's endpoint** — a thin proxy/BFF. It *receives* the form's
+  `POST /api/lead`, validates server-side, then **calls** the mock's `/ping` then `/post`, and returns
+  price+leadId. It prices nothing; it orchestrates. In production it **stays** — only `MOCK_BASE_URL`
+  changes.
+
+Why split: (1) the invariant — the browser must never call the mock directly, so our route is the
+boundary; (2) separation of concerns — the mock is a backend we don't own and will swap, our route is
+our validation/attribution/error-handling; (3) swappability — going live is one env-var change.
+
 ### Q: How do I load Variant B manually?
 
 Append `?v=b` to the URL (`?v=a` for A). Assignment is otherwise a sticky 50/50 cookie split, so a
