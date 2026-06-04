@@ -10,7 +10,6 @@ prompts that actually moved the work.
 | **Claude Code (Opus 4.8)** | Scaffolding, all code, the API route, docs drafts, build verification. |
 | `npm create astro` / `astro add` / `shadcn init` | Scaffolding the exact stack (Astro 6 SSR, React 19, Tailwind v4 Vite plugin, shadcn radix-nova). |
 | `curl` against the running SSR server | Smoke-testing the happy path end-to-end (`/api/lead` → mock `/ping` → `/post`) and confirming only one island hydrates. |
-| **Subagents** (Claude Code Agent tool) | Building the two A/B form variants in parallel-ish, each from a tight spec against a shared hook + field parts. |
 
 ## Delegated vs. owned
 
@@ -23,13 +22,17 @@ prompts that actually moved the work.
 - The 2-step form island, the server-side validate → ping → post route, and the README/Part 2/3
   drafts.
 
+
 **Owned by me (the human):**
 
 - Design direction and the architecture — high-converting minimal, what hydrates, what's static.
 - The brand, palette, and copy direction (locked before the build).
 - Live taste calls during the build (e.g. adding testimonials, the comparison subhead, the carrier
   logo strip to the hero).
-- The two sections below, which are mine to write from real experience.
+- The sections below the form, trust signals: Brands that trust, public reviews by real people, clarity on the process, Real time tracking and Secure payments, etc.
+- In general, I tend to use meaninful PR templates, and always ask for a Risk assessment to be written on the open PRs so I know how reliable is to defer the review to Copilot for example. Medium to High risk PRs are reviewed by me manually, especially on important caveats. 
+
+I opened a couple of sample PRs to show how I normally structure work with AI: a PR template with a risk tag and an AI-workflow section, scoped commits, and verification notes. They are already merged.
 
 ## Prompts that moved the work
 
@@ -49,26 +52,8 @@ prompts that actually moved the work.
 > screenshot.
 
 This is where I steered the design — Claude adapted the Insurify reference into on-domain
-auto-transport copy and used invented carrier names instead of real logos.
-
-**3a. The A/B show-off** — I asked for an experiment to demonstrate orchestration and CRO thinking:
-
-> This is a take-home, so there's room to show off: agents work to create two variants; present the
-> A/B mindset.
-
-How it was run: Claude first extracted the shared form logic into a `useLeadForm` hook + field parts
-(so the variants couldn't drift), **then spawned one subagent per variant** — each given the shared
-APIs and a tight layout spec — to build the 2-step (control) and single-step (challenger) forms (the
-challenger was later reworked into an email-first 2-step variant). I chose the tested variable and the
-server-side, no-flicker assignment approach; the agents only wrote the two layouts. See
-[`docs/AB-TESTING.md`](docs/AB-TESTING.md).
-
-### A note on orchestration
-
-The agents were spawned **sequentially**, not in parallel, on purpose — my global operating rules
-require one tool call to fully resolve before the next. For two small, well-specified components the
-cost of that is negligible. The real win wasn't parallelism; it was **isolation**: each variant was
-built against the same contract without one bleeding into the other.
+auto-transport copy and used invented carrier names instead of real logos (which would have been
+deceptive).
 
 **3. The contract for the ping-post route** (from the brief — drove `src/pages/api/lead.ts`):
 
