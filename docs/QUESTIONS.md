@@ -30,6 +30,13 @@ identical here — only the *form layout* differs, never the submission path.
 Append `?v=b` to the URL (`?v=a` for A). Assignment is otherwise a sticky 50/50 cookie split, so a
 returning browser keeps its variant — clear the `sa_exp_form` cookie (or use incognito) to re-roll.
 
+### Q: What does `#top` do?
+
+It's an in-page anchor. The `<header>` carries `id="top"`, and the secondary CTAs lower on the page
+(`footer "Get my quote"`, mobile sticky bar `Get quote →`, the logo) use `href="#top"` to jump the
+visitor back up to the hero — i.e., back to the quote form — with no JavaScript. Every secondary CTA
+routes back to the conversion target.
+
 ### Q: Was the mock ping-post API documented, or missing from the brief?
 
 It was in the brief (Part 2) and is documented in the repo: README run steps + "How it's wired"
