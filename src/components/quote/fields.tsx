@@ -136,7 +136,7 @@ export function VehicleField({
         onChange={(e) => onChange(e.target.value)}
         aria-invalid={!!error}
         aria-describedby={error ? `${id}-error` : undefined}
-        className={`h-12 w-full appearance-none rounded-lg border border-input bg-transparent bg-[length:1.25rem] bg-[right_0.75rem_center] bg-no-repeat px-3 pr-10 text-sm outline-none focus-visible:border-ring focus-visible:ring-[3px] focus-visible:ring-ring/50 aria-invalid:border-destructive aria-invalid:ring-[3px] aria-invalid:ring-destructive/20 ${value ? "text-foreground" : "text-muted-foreground"} bg-[url('data:image/svg+xml;utf8,<svg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 24 24%22 fill=%22none%22 stroke=%22%23475569%22 stroke-width=%222%22 stroke-linecap=%22round%22 stroke-linejoin=%22round%22><path d=%22m6 9 6 6 6-6%22/></svg>')]`}
+        className={`h-12 w-full appearance-none rounded-lg border border-input bg-transparent bg-[length:1.25rem] bg-[right_0.75rem_center] bg-no-repeat px-3 pr-10 text-sm outline-none focus-visible:border-ring focus-visible:ring-[3px] focus-visible:ring-ring/50 aria-invalid:border-destructive aria-invalid:ring-[3px] aria-invalid:ring-destructive/20 ${value ? "text-foreground" : "text-muted-foreground/55"} bg-[url('data:image/svg+xml;utf8,<svg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 24 24%22 fill=%22none%22 stroke=%22%23475569%22 stroke-width=%222%22 stroke-linecap=%22round%22 stroke-linejoin=%22round%22><path d=%22m6 9 6 6 6-6%22/></svg>')]`}
       >
         <option value="" disabled>
           Select a vehicle
@@ -296,8 +296,8 @@ export function QuoteResult({
 }) {
   return (
     <div className="rounded-2xl border border-border bg-card p-6 text-center shadow-sm motion-safe:animate-in motion-safe:fade-in motion-safe:zoom-in-95 motion-safe:duration-300 sm:p-8">
-      <div className="mx-auto flex size-12 items-center justify-center rounded-full bg-navy/10">
-        <CheckCircle2 className="size-7 text-navy" aria-hidden />
+      <div className="mx-auto flex size-12 items-center justify-center rounded-full bg-emerald-100">
+        <CheckCircle2 className="size-7 text-emerald-600" aria-hidden />
       </div>
       <h2 className="mt-4 font-serif text-2xl font-semibold text-navy">You're matched</h2>
       <p className="mt-1 text-sm text-muted-foreground">
