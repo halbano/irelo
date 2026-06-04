@@ -30,6 +30,19 @@ identical here — only the *form layout* differs, never the submission path.
 Append `?v=b` to the URL (`?v=a` for A). Assignment is otherwise a sticky 50/50 cookie split, so a
 returning browser keeps its variant — clear the `sa_exp_form` cookie (or use incognito) to re-roll.
 
+### Q: How does the frontend hit `localhost:9000`?
+
+It doesn't — by design (invariant #1). The browser only calls **`/api/lead`**, a relative same-origin
+URL (no host/port), so it hits whatever served the page. `localhost:9000` appears **only in server
+code** (`src/pages/api/lead.ts`, via `process.env.MOCK_BASE_URL`); that `fetch` runs in the Node SSR
+process, server-to-server. `MOCK_BASE_URL` is never bundled into client JS. In production you swap it
+for the real backend and the browser code is unchanged.
+
+```text
+Browser ──POST /api/lead──► Astro SSR (Node) ──fetch MOCK_BASE_URL──► :9000 (/ping, /post)
+        same-origin, relative          server-side only
+```
+
 ### Q: What does `#top` do?
 
 It's an in-page anchor. The `<header>` carries `id="top"`, and the secondary CTAs lower on the page
