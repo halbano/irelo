@@ -34,19 +34,23 @@ const steps = [
 const badges = ["Fully insured in transit", "FMCSA licensed", "USDOT registered", "BBB accredited"];
 
 // "What makes us different" — confidence features. icon = inline svg key (below).
+// accent = vibrant cool-family tile (orange stays reserved for the CTA).
 const features = [
   {
     icon: "lock",
+    accent: "bg-teal-500 text-white",
     title: "Secure payments",
     body: "Your payment is held safely until your vehicle is delivered — you stay in control of your money the whole way.",
   },
   {
     icon: "shield",
+    accent: "bg-blue-600 text-white",
     title: "Protected on every mile",
     body: "Every shipment is covered by carrier cargo insurance, with straightforward claims if anything isn't right.",
   },
   {
     icon: "route",
+    accent: "bg-violet-600 text-white",
     title: "Track your shipment",
     body: "Real-time status updates let you follow your car from pickup to drop-off — no guessing where it is.",
   },
@@ -287,7 +291,7 @@ const faqs = [
     </section>
 
     <!-- What makes us different -->
-    <section class="border-y border-border bg-[#f4f6f9]">
+    <section class="border-y border-border bg-gradient-to-br from-sky-50 via-[#f4f6f9] to-emerald-50">
       <div class="mx-auto max-w-6xl px-4 py-16 text-center">
         <h2 class="text-3xl font-bold tracking-tight text-foreground sm:text-4xl">
           What makes us different
@@ -299,8 +303,8 @@ const faqs = [
         <div class="mt-12 grid gap-8 text-left sm:grid-cols-3">
           {
             features.map((f) => (
-              <div>
-                <div class="flex size-12 items-center justify-center rounded-xl bg-navy/10 text-navy">
+              <div class="rounded-2xl border border-border bg-card p-6 shadow-sm">
+                <div class={`flex size-12 items-center justify-center rounded-xl ${f.accent}`}>
                   <svg viewBox="0 0 24 24" class="size-6" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
                     {f.icon === "lock" && (
                       <>
