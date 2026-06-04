@@ -1,5 +1,5 @@
 import { useId, useState, type ReactNode } from "react";
-import { ChevronDown, Lock, ShieldCheck, Star, CheckCircle2 } from "lucide-react";
+import { HelpCircle, Lock, ShieldCheck, Star, CheckCircle2 } from "lucide-react";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { VEHICLE_TYPES, type LeadInput } from "@/lib/lead";
@@ -233,23 +233,35 @@ export function ContactReassurance() {
 
 export function WhyZipExpander() {
   const [open, setOpen] = useState(false);
+  const tipId = useId();
+  // Tooltip, not an expander — the tip is absolutely positioned so it overlays
+  // rather than pushing the rest of the form down. Hover + focus + tap all work.
   return (
-    <div>
+    <div className="relative inline-block">
       <button
         type="button"
-        onClick={() => setOpen((s) => !s)}
+        aria-describedby={tipId}
         aria-expanded={open}
+        onClick={() => setOpen((s) => !s)}
+        onMouseEnter={() => setOpen(true)}
+        onMouseLeave={() => setOpen(false)}
+        onFocus={() => setOpen(true)}
+        onBlur={() => setOpen(false)}
         className="flex items-center gap-1 text-sm font-medium text-navy"
       >
+        <HelpCircle className="size-4" aria-hidden />
         Why do we need your ZIP?
-        <ChevronDown className={`size-4 transition-transform ${open ? "rotate-180" : ""}`} aria-hidden />
       </button>
-      {open && (
-        <p className="mt-2 text-sm text-muted-foreground">
-          Carrier pricing is route-based. Your ZIPs let us pull real quotes for your exact lane
-          instead of a national average.
-        </p>
-      )}
+      <span
+        id={tipId}
+        role="tooltip"
+        className={`absolute top-full left-0 z-20 mt-2 w-64 rounded-lg border border-border bg-popover p-3 text-left text-sm text-muted-foreground shadow-md transition-opacity duration-150 ${
+          open ? "visible opacity-100" : "invisible opacity-0"
+        }`}
+      >
+        Carrier pricing is route-based. Your ZIPs let us pull real quotes for your exact lane instead
+        of a national average.
+      </span>
     </div>
   );
 }
@@ -315,7 +327,7 @@ export function FormError({ message }: { message: string }) {
 }
 
 export function ProgressPips({ step }: { step: 1 | 2 }) {
-  const label = step === 1 ? "Step 1 of 2 · Shipment" : "Step 2 of 2 · Contact";
+  const label = step === 1 ? "Step 1 of 2 · Route & vehicle" : "Step 2 of 2 · Contact";
   return (
     <div>
       <p className="text-xs font-semibold tracking-wide text-muted-foreground uppercase">{label}</p>
