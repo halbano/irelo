@@ -162,29 +162,29 @@ const faqs = [
             Get your car on the road,
             <span class="font-serif font-semibold text-white italic"> straightaway.</span>
           </h1>
-          <p class="mt-4 max-w-md text-lg text-white/75">
-            Compare door-to-door auto-transport quotes from <strong class="font-semibold text-white">120+ vetted carriers</strong>
-            and save up to <strong class="font-semibold text-white">$450*</strong> on your move with Straightaway's instant-match tool.
-          </p>
-          <p class="mt-2 text-xs text-white/50">
-            *Average reported savings vs. first broker quote. Actual price varies by route and vehicle.
-          </p>
-
-          {/* Variant B: stats + chips sit right under the copy (its tall form would
-              otherwise push them to the bottom of the grid). */}
-          {variant === "b" && (
-            <div class="mt-8">
-              <HeroTrust badges={badges} />
-            </div>
+          {/* Hero copy is part of the A/B variant — B leads with the instant-match framing. */}
+          {variant === "b" ? (
+            <p class="mt-4 max-w-md text-lg text-white/75">
+              Get an <strong class="font-semibold text-white">instant-match quote</strong> from
+              120+ vetted carriers — a real, upfront price for your exact route, in about two minutes.
+            </p>
+          ) : (
+            <>
+              <p class="mt-4 max-w-md text-lg text-white/75">
+                Compare door-to-door auto-transport quotes from <strong class="font-semibold text-white">120+ vetted carriers</strong>
+                and save up to <strong class="font-semibold text-white">$450*</strong> on your move with Straightaway's instant-match tool.
+              </p>
+              <p class="mt-2 text-xs text-white/50">
+                *Average reported savings vs. first broker quote. Actual price varies by route and vehicle.
+              </p>
+            </>
           )}
         </div>
 
-        {/* Variant A: trust sits below the form on mobile, in its own column row on desktop. */}
-        {variant !== "b" && (
-          <div class="order-last lg:order-none lg:col-start-1 lg:row-start-2">
-            <HeroTrust badges={badges} />
-          </div>
-        )}
+        {/* Trust: below the form on mobile, in its own column row on desktop (both variants) */}
+        <div class="order-last lg:order-none lg:col-start-1 lg:row-start-2">
+          <HeroTrust badges={badges} />
+        </div>
 
         <!-- Form island — the only hydrated component on the page (A/B variant set server-side) -->
         <div class="lg:col-start-2 lg:row-span-2 lg:row-start-1" data-variant={variant}>
@@ -345,13 +345,12 @@ const faqs = [
             How we match you with carriers
           </h2>
           <p class="mt-4 text-muted-foreground">
-            We're a transparent marketplace, not a single carrier. When you request a quote, we
-            ping licensed carriers running your lane and show you a real price for your route —
-            not a teaser rate that climbs at pickup.
+            Straightaway isn't a carrier — we match you with a licensed one that runs your route and
+            show you a real, upfront price, not a teaser rate that climbs at pickup.
           </p>
           <p class="mt-3 text-muted-foreground">
-            We only match carriers with active FMCSA operating authority and valid cargo insurance.
-            You get matched once — we don't blast your number across a dozen brokers.
+            Every carrier we match has active FMCSA operating authority and valid cargo insurance.
+            You're matched once — we don't blast your number across a dozen brokers.
           </p>
         </div>
         <ul class="grid gap-3 sm:grid-cols-2">

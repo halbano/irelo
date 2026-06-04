@@ -320,6 +320,15 @@ export function WhyZipExpander() {
   );
 }
 
+export function ConsentNote() {
+  return (
+    <p className="mt-3 text-center text-xs text-muted-foreground">
+      By submitting, you agree your matched carrier may contact you to confirm the details — consent
+      isn't required just to see your price.
+    </p>
+  );
+}
+
 export function TrustLine() {
   return (
     <div className="mt-4 flex flex-wrap items-center justify-center gap-x-3 gap-y-1 text-center text-sm text-muted-foreground">
@@ -380,8 +389,16 @@ export function FormError({ message }: { message: string }) {
   );
 }
 
-export function ProgressPips({ step, onBack }: { step: 1 | 2; onBack?: () => void }) {
-  const label = step === 1 ? "Step 1 of 2 · Route & vehicle" : "Step 2 of 2 · Contact";
+export function ProgressPips({
+  step,
+  onBack,
+  stepLabels = ["Route & vehicle", "Contact"],
+}: {
+  step: 1 | 2;
+  onBack?: () => void;
+  stepLabels?: [string, string];
+}) {
+  const label = `Step ${step} of 2 · ${stepLabels[step - 1]}`;
   const pips = (
     <div className="mt-1.5 flex gap-1.5" aria-hidden>
       <span className="h-1.5 w-8 rounded-full bg-navy" />

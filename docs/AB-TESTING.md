@@ -15,21 +15,20 @@ A directional, falsifiable hypothesis — not "let's see what happens." The coun
 (a 2-step flow *feels* shorter and front-loads the cheap fields), which is exactly why it's worth a
 test rather than an opinion.
 
-## One variable
-
-The variants differ in **exactly one thing: number of steps.** Same fields, same copy, same hero,
-same validation, same CTA color. If we changed the headline *and* the form, a win wouldn't tell us
-which caused it. One variable = a clean causal read.
+## The variants
 
 | | Variant A (control) | Variant B (challenger) |
 | --- | --- | --- |
-| Layout | 2-step wizard (Route → Contact) | Single step, all fields on one card |
-| Progress UI | Step pips, back control | None |
-| Fields | — identical — | — identical — |
+| Step 1 | route + vehicle + ship date | route + vehicle + **email** |
+| Step 2 | name + email + phone | ship date + name + phone |
+| Hero copy | "Compare… save up to $450*" (value framing) | "Get an instant-match quote…" (speed framing) |
 
-Both variants collect the **same fields** — origin/destination ZIP, vehicle, ship date, name, email,
-and an optional phone. The *only* difference is how they're paginated, which keeps the comparison
-clean (a win is attributable to step count, nothing else).
+Same seven fields, regrouped: B captures **email up front** (so a partial completer is still
+reachable) and pushes ship date to step 2. B also runs **different hero copy**. So B is intentionally a
+**combined field-order + copy** variant — a "which whole experience converts better" read, not a clean
+single-variable attribution. Deliberate tradeoff: a fast directional answer on the bigger swing, at the
+cost of not isolating *which* change drove it. To attribute precisely, follow up with single-variable
+tests.
 
 ## Assignment
 
@@ -65,33 +64,16 @@ Server-side, sticky, 50/50 — see [`src/lib/experiment.ts`](../src/lib/experime
   the test; once it's called, delete the loser and fold the winner back into one path. Don't leave dead
   variants accruing.
 
-## What to test next (prioritization)
+## What to test next
 
-The current experiment is structural (step count) — useful as a proof of the harness, but the **least
-interesting lever**. In practice, **content variants usually move volume more than structural
-micro-changes**, and they're cheaper and lower-risk to run. Priority order:
+Step count is the least interesting lever. **Content variants usually move volume more** — and the
+harness is content-agnostic, so a variant can differ in **copy** (headline, value prop, CTA) just as
+easily as in layout, with no new infra. Variant B can double as a content variant; purity drops a bit,
+but a quick directional read can be worth it.
 
-1. **Content (highest leverage).** Headline / value-prop framing (price-savings vs. speed vs. trust),
-   CTA copy ("Get my quote" vs. "See my price"), hero subhead, which trust signals lead. The plumbing
-   here is **content-agnostic** — the sticky cookie split and `experiment`/`variant` attribution work
-   the same whether the variants differ in copy or in layout, so a headline/CTA test needs **no new
-   infra**, just two server-rendered strings.
-2. **Field set / friction** — fewer fields → more submits, but lower lead quality (see below).
-3. **Structure** — pagination (the current test).
-
-### Candidate: minimal-capture form
-
-Hypothesis: a radically short form lifts submit rate.
-
-- **Mock-contract caveat.** `/ping` requires `originZip`, `destinationZip`, **and `vehicleType`** (it
-  400s without them). So a literal "origin + destination + email" form can't price. The leanest form
-  that still works end-to-end is **origin + destination + vehicle + email** (drop name, phone, ship
-  date). You also need at least one contact channel (email *or* phone) to act on the lead.
-- **Guardrail — quality, not just volume.** A shorter form that lifts submits but drops *closeable*
-  leads is a net loss. Measure submit rate **and** downstream lead quality (contactability, close
-  rate). Don't call it on submit rate alone.
-- **One variable.** A minimal-capture variant changes the *field set* — a different lever than the
-  step-count test — so run it as its own experiment, not bolted onto this one.
+Also tempting: a **minimal-capture** form (fewer fields → more submits). Caveat — `/ping` needs
+`vehicleType`, so the leanest that still prices is **origin + destination + vehicle + email**. Watch
+lead *quality* (contactability, close rate), not just submit rate.
 
 ## Why this is safe to run on a conversion page
 

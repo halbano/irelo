@@ -10,8 +10,6 @@ import {
   TextField,
   PhoneField,
   EmailHint,
-  ContactReassurance,
-  WhyZipExpander,
   TrustLine,
   ConsentNote,
   QuoteResult,
@@ -21,11 +19,12 @@ import {
 } from "./fields";
 
 /**
- * Variant A of the quote-form A/B test: a 2-step wizard (the lower-friction
- * commitment ladder). Layout only — all state, validation, and submission live
- * in the shared useLeadForm hook and field parts.
+ * Variant B of the quote-form A/B test: a 2-step form that captures contact
+ * (email) up front. Step 1 = route + vehicle + email; step 2 = the rest. This is
+ * a combined layout + copy variant (the hero copy also differs) — see
+ * docs/AB-TESTING.md. Layout only; state/validation live in the shared hook.
  */
-export default function SteppedQuoteForm({ variant = "a" }: { variant?: string }) {
+export default function EmailFirstQuoteForm({ variant = "b" }: { variant?: string }) {
   const { values, errors, status, submitError, result, set, setErrors, validateFields, submit, submitting } =
     useLeadForm();
   const [step, setStep] = useState<1 | 2>(1);
@@ -33,7 +32,7 @@ export default function SteppedQuoteForm({ variant = "a" }: { variant?: string }
   if (result) return <QuoteResult price={result.price} leadId={result.leadId} route={values} />;
 
   const next = () => {
-    if (validateFields(["originZip", "destinationZip", "vehicleType", "shipDate"])) setStep(2);
+    if (validateFields(["originZip", "destinationZip", "vehicleType", "email"])) setStep(2);
   };
 
   const goBack = () => {
@@ -54,7 +53,7 @@ export default function SteppedQuoteForm({ variant = "a" }: { variant?: string }
       className="rounded-2xl border border-border bg-card p-5 text-foreground shadow-sm sm:p-6"
     >
       <div className="mb-4 flex items-center justify-between gap-3">
-        <ProgressPips step={step} onBack={goBack} />
+        <ProgressPips step={step} onBack={goBack} stepLabels={["Route & email", "Final details"]} />
         <CallLink />
       </div>
 
@@ -69,29 +68,10 @@ export default function SteppedQuoteForm({ variant = "a" }: { variant?: string }
             onDestinationChange={(v) => set("destinationZip", v)}
           />
 
-          <WhyZipExpander />
-
           <VehicleField
             value={values.vehicleType}
             error={errors.vehicleType}
             onChange={(v) => set("vehicleType", v)}
-          />
-
-          <DateField
-            value={values.shipDate}
-            error={errors.shipDate}
-            onChange={(v) => set("shipDate", v)}
-          />
-        </div>
-      ) : (
-        <div className="space-y-4">
-          <TextField
-            label="Full name"
-            autoComplete="name"
-            placeholder="Alex Carter"
-            value={values.fullName}
-            error={errors.fullName}
-            onChange={(v) => set("fullName", v)}
           />
 
           <TextField
@@ -104,14 +84,29 @@ export default function SteppedQuoteForm({ variant = "a" }: { variant?: string }
             hint={<EmailHint />}
             onChange={(v) => set("email", v)}
           />
+        </div>
+      ) : (
+        <div className="space-y-4">
+          <DateField
+            value={values.shipDate}
+            error={errors.shipDate}
+            onChange={(v) => set("shipDate", v)}
+          />
+
+          <TextField
+            label="Full name"
+            autoComplete="name"
+            placeholder="Alex Carter"
+            value={values.fullName}
+            error={errors.fullName}
+            onChange={(v) => set("fullName", v)}
+          />
 
           <PhoneField
             value={values.phone}
             error={errors.phone}
             onChange={(v) => set("phone", v)}
           />
-
-          <ContactReassurance />
         </div>
       )}
 
@@ -124,7 +119,7 @@ export default function SteppedQuoteForm({ variant = "a" }: { variant?: string }
             onClick={next}
             className="h-12 w-full bg-cta text-base font-semibold text-cta-foreground hover:bg-cta-hover motion-safe:transition-transform motion-safe:hover:-translate-y-0.5"
           >
-            Get my quote
+            Continue
           </Button>
         ) : (
           <div className="flex gap-3">

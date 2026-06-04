@@ -49,8 +49,7 @@ prompts that actually moved the work.
 > screenshot.
 
 This is where I steered the design — Claude adapted the Insurify reference into on-domain
-auto-transport copy and used invented carrier names instead of real logos (which would have been
-deceptive).
+auto-transport copy and used invented carrier names instead of real logos.
 
 **3a. The A/B show-off** — I asked for an experiment to demonstrate orchestration and CRO thinking:
 
@@ -78,10 +77,16 @@ built against the same contract without one bleeding into the other.
 
 ## Where it went wrong
 
-<!-- MINE TO WRITE — from real experience. Where Claude produced something wrong or off-taste,
-how I caught it, and what I did instead. Do not let Claude fill this in. -->
+I created a BUGS_AND_CORRECTIONS.md file where you can find all the details about how we iterated after the first prompt if interested
+
+The worse Claude output here was the color of the input fields, that defaulted for some reason to white and Claude spent a lot of time installing pupeteer, taking screenshots, etc, this was a point where I needed to jump into reviewing code direclty. 
+
+The response after I suggested the fix was: 
+
+  That's it — you nailed it. The hero is now bg-navy text-white. The shadcn Input has no explicit text color, so it inherits white from the navy hero → typed text is white-on-white (invisible). The placeholder has its own color (text-muted-foreground) so it shows. That's exactly "placeholders but no real input." My tests read .value (which was set) not the rendered color — so they wrongly passed. Real bug, your eye caught it.
 
 ## Verification
 
-<!-- MINE TO WRITE — how I convinced myself the output was correct and good, not just plausible.
-Do not let Claude fill this in. -->
+Verification was done manually, and I allowed Claude to use Pupeteer to capture stuff to validate centering, etc. 
+
+For the sake of time, I didn't iterated using PRs in this case. 
