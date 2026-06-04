@@ -58,12 +58,14 @@ mock-ping-post.mjs  (:9000)  ←────────────────
 
 ## Part 2 — Failure handling
 
-Today only the happy path is built. The route returns a generic error for anything else. 
+Today the effort was put on the happy path, which is completely wired. 
+The route returns a generic error for anything else. 
 
 ### 1. `/ping` rejected — no buyers for this lane
 
-A rejection is a real business answer, not an error: nobody wants this lead right now. I would **not**
-retry blind. Instead, degrade gracefully — keep the contact step, capture the lead anyway ("Carriers
+A rejection initially is a real business answer, not an error: nobody wants or can take this lead right away. I would **not**
+retry blindly. 
+Instead, degrade gracefully — keep the contact step, capture the lead anyway ("Carriers
 on your route are limited — leave your details and we'll match you within 24h"), and route it to a
 follow-up queue. A `/ping` *is* safe to retry on a network/5xx failure (it's read-only, no lead is
 created), so I'd retry the *transport failure* a couple of times with backoff, but treat a clean
@@ -71,29 +73,22 @@ created), so I'd retry the *transport failure* a couple of times with backoff, b
 
 ### 2. `/post` returns a duplicate (409)
 
-The lead already exists. From the user's side this is **success** — show the confirmation, don't make
-them resubmit. I'd surface the existing `leadId` (if the backend returns it) and move on. The risk is
-treating 409 as an error and prompting a resubmit, which produces a worse experience for an outcome
-that's actually fine.
+The lead already exists. From the user's side this is **success** — we should show a confirmation page. It doesn't make sense to ask the user to resubmit. Probably a message saying "We are already preparing your quote" that can be linked with a GET on the existing instance of the lead would be enough to redirect the user to the actual quote if this is the case. 
+Showing success and deferring to the email is probably the UX I would follow.
 
 ### 3. `/post` times out / network error
 
-This can be the complicated one. **`/post` is not safely idempotent unless the backend dedupes** — a retry
-after a timeout can create a second lead, because the first request may have succeeded and we just
-never saw the response. So:
+This is probably the trickiest one. **`/post` can lead to duplications if we allow retries** — a retry
+after a timeout can create a second lead, because the first request may have succeeded and the response was lost on the cable. So:
 
 - I'd put a **hard timeout** on the upstream `fetch` (~8s) so the user isn't left hanging behind the
   10s `slow` case.
 - I would **not** auto-retry `/post` unless we pass an **idempotency key** (e.g. the `pingId` or a
-  client-generated UUID) that the backend uses to dedupe. With that key, retry is safe. Without it,
-  retrying trades a clean failure for the risk of double-billing a duplicate lead — worse than asking
+  client-generated UUID) that the backend uses to avoid duplication. Without this unique identifier we are on the risk of double-billing a duplicate lead — completely worse than asking
   the user to try again.
 
-- User-facing: a clear, recoverable error ("We couldn't confirm your request — try again"), and the
-  form keeps their data so one tap re-submits.
-
-**The call I'd want from you:** does the backend dedupe `/post` on an idempotency key? If yes, I auto-
-retry once. If no, I fail clean and let the user re-submit, because a duplicate lead can cost the customer and money. 
+- User-facing: a clear, recoverable error ("We couldn't confirm your request now — please try again"), and the
+  form keeps their data on the fields so one tap re-submits (this is crucial)
 
 ---
 
@@ -138,6 +133,17 @@ self-contained. I use `client:load` (not `client:idle`) because the form *is* th
 interactive immediately, not deferred. That doesn't hurt LCP: the form is server-rendered in the
 island's markup, so it's painted and the layout is stable before JS runs — hydration only wires up the
 interactivity.
+
+A representative moment of working with AI here — and where I had to step in. When the hero turned
+navy, typed input text went invisible: the island's inputs had no explicit text color and inherited
+the hero's white onto the white form card. The automated checks read `.value` (which *was* set) and
+missed it; my eye on the rendered page caught it. Claude's explanation once I pointed at the symptom:
+
+> That's it — you nailed it. The hero is now `bg-navy text-white`. The shadcn Input has no explicit
+> text color, so it inherits white from the navy hero → typed text is white-on-white (invisible). The
+> placeholder has its own color (`text-muted-foreground`) so it shows. That's exactly "placeholders but
+> no real input." My tests read `.value` (which was set) not the rendered color — so they wrongly
+> passed. Real bug, your eye caught it.
 
 ### 3. Paid-traffic version — LCP / CLS / INP, and what I'd measure first
 

@@ -73,6 +73,6 @@ The response after I suggested the fix was:
 
 ## Verification
 
-Verification was done manually, and I allowed Claude to use Pupeteer to capture stuff to validate centering, etc. 
+Verification was done manually, and I allowed Claude to use Pupeteer to screenshot the screen to validate elements positioning, copy, etc. 
 
-For the sake of time, I didn't iterated using PRs in this case. 
+For the sake of time, I just created a couple of sample PRs to describe how descriptive I try to be and how the PRs automatically have a risk tag / indication (based on certain criteria) to know if the changes may need manual review or can be safely merged into the target branch
