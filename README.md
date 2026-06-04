@@ -36,7 +36,7 @@ to see the happy path: a quoted price and a confirmation.
 ## How it's wired
 
 ```text
-Browser (QuoteWizard island)
+Browser (QuoteForm island)
    │  POST /api/lead   (full lead)
    ▼
 src/pages/api/lead.ts   ── validates server-side ──┐
@@ -49,16 +49,16 @@ mock-ping-post.mjs  (:9000)  ←────────────────
 - **`src/lib/lead.ts`** — shared lead shape + `validateLead()`. Used for client-side field hints;
   enforced authoritatively on the server.
 - **`src/pages/api/lead.ts`** — the only thing that talks to the mock. Validate → `/ping` → `/post`.
-- **`src/components/QuoteWizard.tsx`** — the single React island (`client:idle`). Everything else is
-  static server-rendered HTML.
+- **`src/components/QuoteForm.tsx`** — the single React island (`client:load`); renders the A/B variant
+  chosen server-side. Variants live in `src/components/quote/` (shared `useLeadForm` hook + `fields`,
+  `SteppedQuoteForm` = A, `EmailFirstQuoteForm` = B). Everything else is static server-rendered HTML.
+- **`src/lib/experiment.ts`** — sticky 50/50 variant assignment. See [`docs/AB-TESTING.md`](docs/AB-TESTING.md).
 
 ---
 
-## Part 2 — Failure handling (production write-up · draft for review)
+## Part 2 — Failure handling
 
-Today only the happy path is built. The route returns a generic error for anything else. Here's how
-I'd handle the three real failure modes in production — **the retry calls are yours to make; I've
-framed the tradeoff.**
+Today only the happy path is built. The route returns a generic error for anything else. 
 
 ### 1. `/ping` rejected — no buyers for this lane
 
@@ -78,7 +78,7 @@ that's actually fine.
 
 ### 3. `/post` times out / network error
 
-This is the dangerous one. **`/post` is not safely idempotent unless the backend dedupes** — a retry
+This can be the complicated one. **`/post` is not safely idempotent unless the backend dedupes** — a retry
 after a timeout can create a second lead, because the first request may have succeeded and we just
 never saw the response. So:
 
@@ -88,11 +88,12 @@ never saw the response. So:
   client-generated UUID) that the backend uses to dedupe. With that key, retry is safe. Without it,
   retrying trades a clean failure for the risk of double-billing a duplicate lead — worse than asking
   the user to try again.
+
 - User-facing: a clear, recoverable error ("We couldn't confirm your request — try again"), and the
   form keeps their data so one tap re-submits.
 
 **The call I'd want from you:** does the backend dedupe `/post` on an idempotency key? If yes, I auto-
-retry once. If no, I fail clean and let the user re-submit, because a duplicate lead costs real money.
+retry once. If no, I fail clean and let the user re-submit, because a duplicate lead can cost the customer and money. 
 
 ---
 
@@ -110,27 +111,40 @@ is Geist sans. No hero photo — it would cost mobile LCP for no conversion gain
 **Cut for time:** address autocomplete / ZIP-to-city echo, inline price-range teaser before submit,
 animated step transitions, real review-platform widgets (the Trustpilot/ratings are placeholders).
 
-**Next:** server-validated ZIP→city lookup so step 1 confirms the route back to the user; an A/B test
-on a single-step vs. 2-step form; replace placeholder trust numbers with real review-platform widgets.
+**Next:** replace placeholder trust numbers with real review-platform widgets. A **first A/B test is
+already wired** — two 2-step variants (A: spec field order; B: email captured first + different hero
+copy), server-side split, no flicker — see [`docs/AB-TESTING.md`](docs/AB-TESTING.md). Try `?v=a` /
+`?v=b` to force a variant.
+
+**UX improvement follow-up — assisted location → ZIP (the real win):** let a user type a city or state
+(`Chicago`, `IL`, `CH`) and get assisted with the matching ZIP, instead of having to know the 5-digit
+code. This is the genuinely valuable version of "ZIP help" — most people know their city, not their
+ZIP. It belongs **server-side** (a real geocoding/ZIP API behind our own route, debounced, validated),
+not as a client-side simulation. I built a quick simulated client-side ZIP autocomplete during the
+spike and then **removed it** — a fake lookup adds island complexity and state for no real value in
+this timeframe, and the honest version is a backend integration. Tracked here as the follow-up to do
+properly rather than fake.
 
 ### 2. React island vs. static Astro — and the cost of hydrating the form
 
-**Only `QuoteWizard` is a React island** (`client:idle`). It needs client state: 2-step navigation,
+**Only `QuoteForm` is a React island** (`client:load`). It needs client state: 2-step navigation,
 per-field validation, and the loading/error/result transitions — that's interactivity React earns.
 **Everything else is static server-rendered HTML**: hero copy, trust strips, how-it-works, methodology,
-FAQ (native `<details>`, no JS), footer. The mobile sticky-CTA reveal is plain progressive enhancement
-(a tiny IntersectionObserver `<script>`), not a hydrated component.
+FAQ (native `<details>`, no JS), footer. The mobile sticky-CTA reveal and the support-chat widget are
+plain progressive enhancement (tiny `<script>`s), not hydrated components.
 
 **Cost of hydrating the form:** shipping + parsing React + the island's JS, and a hydration pass before
-the form is interactive. I keep it cheap by hydrating **only** the form, deferring with `client:idle`
-(the static hero paints first; hydration happens at idle), and keeping the island self-contained.
-The form is server-rendered in the island's markup, so it's visible and the layout is stable before JS
-runs — hydration only wires up the interactivity.
+the form is interactive. I keep it cheap by hydrating **only** the form and keeping the island
+self-contained. I use `client:load` (not `client:idle`) because the form *is* the hero — it should be
+interactive immediately, not deferred. That doesn't hurt LCP: the form is server-rendered in the
+island's markup, so it's painted and the layout is stable before JS runs — hydration only wires up the
+interactivity.
 
 ### 3. Paid-traffic version — LCP / CLS / INP, and what I'd measure first
 
 - **LCP:** the headline + form card. Protect it by self-hosting fonts (already done — no Google Fonts
-  round-trip), no hero image, and not letting the island block first paint (`client:idle`).
+  round-trip), no hero image, and keeping the form server-rendered so first paint never waits on the
+  island's JS (`client:load` only wires up an already-painted form).
 - **CLS:** the biggest risk is the sticky bar and the form reserving space. The form is SSR'd at its
   final size; the sticky bar is `position: fixed` and transform-revealed, so it doesn't reflow content.
   Fonts are self-hosted to avoid a swap shift.

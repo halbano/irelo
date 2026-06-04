@@ -1,0 +1,119 @@
+---
+// Static support/chat widget — NOT a React island, no hydration.
+// Open/close via native <details> (zero JS). The chat itself is a SIMULATION:
+// a tiny vanilla script appends canned agent replies. No real backend.
+// Desktop: a prompt card open by default. Mobile: a tappable bubble that expands
+// above the sticky CTA bar.
+import ChatPanel from "@/components/ChatPanel.astro";
+---
+
+<!-- Desktop: open-by-default prompt card (collapsible, no JS) -->
+<details open class="group fixed right-6 bottom-6 z-40 hidden w-[20rem] lg:block">
+  <summary
+    class="flex cursor-pointer list-none items-center justify-between gap-2 rounded-2xl border border-border bg-navy px-4 py-3 text-sm font-semibold text-white shadow-lg group-open:rounded-b-none"
+  >
+    <span class="flex items-center gap-2">
+      <span class="relative flex size-2.5">
+        <span class="absolute inline-flex h-full w-full rounded-full bg-green-400 opacity-75 motion-safe:animate-ping"></span>
+        <span class="relative inline-flex size-2.5 rounded-full bg-green-400"></span>
+      </span>
+      Chat with our team
+    </span>
+    <svg viewBox="0 0 24 24" class="size-4 transition-transform group-open:rotate-180" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+      <path d="m6 9 6 6 6-6"></path>
+    </svg>
+  </summary>
+  <div class="rounded-b-2xl border border-t-0 border-border bg-card p-4 shadow-lg">
+    <ChatPanel />
+  </div>
+</details>
+
+<!-- Mobile: tappable bubble that expands (sits above the sticky CTA bar) -->
+<details class="group fixed right-4 bottom-20 z-40 lg:hidden">
+  <summary
+    aria-label="Chat with our team or get help"
+    class="flex size-14 cursor-pointer list-none items-center justify-center rounded-full bg-navy text-white shadow-lg group-open:hidden"
+  >
+    <svg viewBox="0 0 24 24" class="size-6" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+      <path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"></path>
+    </svg>
+  </summary>
+  <div class="relative w-[18rem] max-w-[calc(100vw-2rem)] rounded-2xl border border-border bg-card p-4 shadow-xl">
+    <button
+      type="button"
+      data-chat-close
+      aria-label="Minimize chat"
+      class="absolute top-2.5 right-2.5 z-10 flex size-7 items-center justify-center rounded-full text-muted-foreground hover:bg-muted"
+    >
+      <svg viewBox="0 0 24 24" class="size-4" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+        <path d="M18 6 6 18M6 6l12 12"></path>
+      </svg>
+    </button>
+    <ChatPanel />
+  </div>
+</details>
+
+<script>
+  // Chat SIMULATION (progressive enhancement, not a React island): echo the
+  // user's message and append a canned agent reply. Wires every chat panel.
+  function cannedReply(msg: string): string {
+    const m = msg.toLowerCase();
+    if (m.includes("price") || m.includes("cost") || m.includes("quote"))
+      return "Happy to help with pricing! Drop your pickup and delivery ZIPs into the quote form above and I'll get you a real number in about two minutes.";
+    if (m.includes("track"))
+      return "You'll get real-time tracking once your car is picked up — I can text you the link. Which shipment are you asking about?";
+    if (m.includes("insur") || m.includes("safe"))
+      return "Every carrier we match is fully insured in transit, with cargo coverage door to door. Want me to pull a quote so you can see the details?";
+    return "Great question! A specialist will follow up shortly. Meanwhile you can grab an instant quote with the form above, or call us at (888) 555-0142.";
+  }
+
+  function bubble(text: string, who: "user" | "agent"): HTMLParagraphElement {
+    const p = document.createElement("p");
+    p.textContent = text;
+    p.className =
+      who === "user"
+        ? "ml-auto max-w-[85%] rounded-2xl rounded-tr-sm bg-navy px-3 py-2 text-sm text-white"
+        : "max-w-[85%] rounded-2xl rounded-tl-sm bg-muted px-3 py-2 text-sm text-foreground";
+    return p;
+  }
+
+  // Minimize: collapse the parent <details> (mobile has no visible summary when open).
+  document.querySelectorAll<HTMLButtonElement>("[data-chat-close]").forEach((btn) => {
+    btn.addEventListener("click", () => {
+      const details = btn.closest("details");
+      if (details) details.open = false;
+    });
+  });
+
+  // "Start a chat" swaps the intro buttons for the conversation view.
+  document.querySelectorAll<HTMLButtonElement>("[data-chat-start]").forEach((btn) => {
+    btn.addEventListener("click", () => {
+      const root = btn.closest("[data-chat-root]");
+      const intro = root?.querySelector<HTMLElement>("[data-chat-intro]");
+      const convo = root?.querySelector<HTMLElement>("[data-chat-convo]");
+      if (intro) intro.hidden = true;
+      if (convo) convo.hidden = false;
+      convo?.querySelector<HTMLInputElement>("[data-chat-input]")?.focus();
+    });
+  });
+
+  document.querySelectorAll<HTMLFormElement>("[data-chat-form]").forEach((form) => {
+    const panel = form.parentElement;
+    const log = panel?.querySelector<HTMLElement>("[data-chat-log]");
+    const input = form.querySelector<HTMLInputElement>("[data-chat-input]");
+    if (!log || !input) return;
+
+    form.addEventListener("submit", (e) => {
+      e.preventDefault();
+      const msg = input.value.trim();
+      if (!msg) return;
+      log.appendChild(bubble(msg, "user"));
+      input.value = "";
+      log.scrollTop = log.scrollHeight;
+      window.setTimeout(() => {
+        log.appendChild(bubble(cannedReply(msg), "agent"));
+        log.scrollTop = log.scrollHeight;
+      }, 700);
+    });
+  });
+</script>

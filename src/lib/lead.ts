@@ -32,8 +32,10 @@ export function validateLead(input: Partial<LeadInput>): FieldErrors {
   if (!input.fullName || input.fullName.trim().length < 2)
     e.fullName = "Enter your full name";
   if (!EMAIL.test(input.email ?? "")) e.email = "Enter a valid email";
-  if ((input.phone ?? "").replace(/\D/g, "").length < 10)
-    e.phone = "Enter a valid phone number";
+  // Phone is optional. Only validate the format if something was entered.
+  const phoneDigits = (input.phone ?? "").replace(/\D/g, "");
+  if (phoneDigits.length > 0 && phoneDigits.length < 10)
+    e.phone = "Enter a 10-digit phone, or leave it blank";
 
   return e;
 }

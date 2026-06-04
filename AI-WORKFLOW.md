@@ -10,6 +10,7 @@ prompts that actually moved the work.
 | **Claude Code (Opus 4.8)** | Scaffolding, all code, the API route, docs drafts, build verification. |
 | `npm create astro` / `astro add` / `shadcn init` | Scaffolding the exact stack (Astro 6 SSR, React 19, Tailwind v4 Vite plugin, shadcn radix-nova). |
 | `curl` against the running SSR server | Smoke-testing the happy path end-to-end (`/api/lead` → mock `/ping` → `/post`) and confirming only one island hydrates. |
+| **Subagents** (Claude Code Agent tool) | Building the two A/B form variants in parallel-ish, each from a tight spec against a shared hook + field parts. |
 
 ## Delegated vs. owned
 
@@ -48,8 +49,26 @@ prompts that actually moved the work.
 > screenshot.
 
 This is where I steered the design — Claude adapted the Insurify reference into on-domain
-auto-transport copy and used invented carrier names instead of real logos (which would have been
-deceptive).
+auto-transport copy and used invented carrier names instead of real logos.
+
+**3a. The A/B show-off** — I asked for an experiment to demonstrate orchestration and CRO thinking:
+
+> This is a take-home, so there's room to show off: agents work to create two variants; present the
+> A/B mindset.
+
+How it was run: Claude first extracted the shared form logic into a `useLeadForm` hook + field parts
+(so the variants couldn't drift), **then spawned one subagent per variant** — each given the shared
+APIs and a tight layout spec — to build the 2-step (control) and single-step (challenger) forms (the
+challenger was later reworked into an email-first 2-step variant). I chose the tested variable and the
+server-side, no-flicker assignment approach; the agents only wrote the two layouts. See
+[`docs/AB-TESTING.md`](docs/AB-TESTING.md).
+
+### A note on orchestration
+
+The agents were spawned **sequentially**, not in parallel, on purpose — my global operating rules
+require one tool call to fully resolve before the next. For two small, well-specified components the
+cost of that is negligible. The real win wasn't parallelism; it was **isolation**: each variant was
+built against the same contract without one bleeding into the other.
 
 **3. The contract for the ping-post route** (from the brief — drove `src/pages/api/lead.ts`):
 
@@ -59,10 +78,16 @@ deceptive).
 
 ## Where it went wrong
 
-<!-- MINE TO WRITE — from real experience. Where Claude produced something wrong or off-taste,
-how I caught it, and what I did instead. Do not let Claude fill this in. -->
+I created a BUGS_AND_CORRECTIONS.md file where you can find all the details about how we iterated after the first prompt if interested
+
+The worse Claude output here was the color of the input fields, that defaulted for some reason to white and Claude spent a lot of time installing pupeteer, taking screenshots, etc, this was a point where I needed to jump into reviewing code direclty. 
+
+The response after I suggested the fix was: 
+
+  That's it — you nailed it. The hero is now bg-navy text-white. The shadcn Input has no explicit text color, so it inherits white from the navy hero → typed text is white-on-white (invisible). The placeholder has its own color (text-muted-foreground) so it shows. That's exactly "placeholders but no real input." My tests read .value (which was set) not the rendered color — so they wrongly passed. Real bug, your eye caught it.
 
 ## Verification
 
-<!-- MINE TO WRITE — how I convinced myself the output was correct and good, not just plausible.
-Do not let Claude fill this in. -->
+Verification was done manually, and I allowed Claude to use Pupeteer to capture stuff to validate centering, etc. 
+
+For the sake of time, I didn't iterated using PRs in this case. 
