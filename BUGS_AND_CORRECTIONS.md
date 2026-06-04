@@ -24,6 +24,9 @@ owner. **Non-issue** = reported but not a code defect.
 | 16 | Correction | Disliked the chat opening straight to the transcript | Reverted to a two-button intro (Start a chat / Call); "Start a chat" reveals the sim. |
 | 17 | Correction | "Shipment" step label was weak | Step 1 label → "Route & vehicle" (matches its fields after the date was removed). |
 | 18 | **Bug** | **Mobile chat couldn't be minimized** | The bubble (its only toggle) hid when open. Added an explicit close (×) button that collapses the `<details>`. |
+| 19 | **Bug** | **Typed input text was invisible** ("only visible when selected") | Inputs inherited the navy hero's `text-white` onto the white form card → white-on-white. Placeholders had their own color so they still showed — which is why earlier `.value`-based checks wrongly passed. Forced `text-foreground` on the Input primitive + form cards. Caught by the owner's eye ("is the input color not black?"), then confirmed via computed-style check (`rgb(10,10,10)`). |
+| 20 | **Bug** | **"Failed to fetch" on submit** | The route's upstream `/ping`+`/post` calls weren't wrapped, so an unreachable mock threw unhandled and the client saw a raw fetch failure. Wrapped them → clean 502 JSON the form renders as a real message. (Also: run the mock on :9000.) |
+| 21 | Correction | Easier way back to step 1 | Step-2 stepper is now a back control, and the text "Back" became an arrow-icon button beside the CTA. Also switched the island to `client:load` (it's the hero) for immediate interactivity. |
 
 ## Notes on how bugs were caught
 
