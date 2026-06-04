@@ -67,6 +67,18 @@ import ChatPanel from "@/components/ChatPanel.astro";
     return p;
   }
 
+  // "Start a chat" swaps the intro buttons for the conversation view.
+  document.querySelectorAll<HTMLButtonElement>("[data-chat-start]").forEach((btn) => {
+    btn.addEventListener("click", () => {
+      const root = btn.closest("[data-chat-root]");
+      const intro = root?.querySelector<HTMLElement>("[data-chat-intro]");
+      const convo = root?.querySelector<HTMLElement>("[data-chat-convo]");
+      if (intro) intro.hidden = true;
+      if (convo) convo.hidden = false;
+      convo?.querySelector<HTMLInputElement>("[data-chat-input]")?.focus();
+    });
+  });
+
   document.querySelectorAll<HTMLFormElement>("[data-chat-form]").forEach((form) => {
     const panel = form.parentElement;
     const log = panel?.querySelector<HTMLElement>("[data-chat-log]");

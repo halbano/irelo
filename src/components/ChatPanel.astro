@@ -1,9 +1,12 @@
 ---
-// Simulated chat transcript + input. Driven by a tiny vanilla script in
-// ChatWidget.astro (NOT a React island). Canned replies — no real backend.
+// Chat widget body. Two states (toggled by the vanilla script in ChatWidget):
+//  1. intro  — greeting + two buttons (Start a chat / Call)
+//  2. convo  — simulated transcript + input (canned agent replies)
+const PHONE = "(888) 555-0142";
+const PHONE_HREF = "tel:+18885550142";
 ---
 
-<div class="flex flex-col">
+<div data-chat-root>
   <div class="flex items-center gap-2 border-b border-border pb-3">
     <span class="flex size-8 items-center justify-center rounded-full bg-navy text-sm font-bold text-white">M</span>
     <div class="leading-tight">
@@ -14,23 +17,45 @@
     </div>
   </div>
 
-  <div data-chat-log class="mt-3 max-h-56 space-y-2 overflow-y-auto pr-1">
-    <p class="max-w-[85%] rounded-2xl rounded-tl-sm bg-muted px-3 py-2 text-sm text-foreground">
-      Hi! I'm Maya from Straightaway 👋 Ask me anything about shipping your car — or I can help you finish your quote.
+  <!-- 1. Intro: two buttons -->
+  <div data-chat-intro class="mt-3 flex flex-col gap-2">
+    <p class="text-sm text-muted-foreground">
+      Need a hand? Start a chat with our team, or give us a call — whatever's easier.
     </p>
+    <button
+      type="button"
+      data-chat-start
+      class="flex h-10 items-center justify-center rounded-md bg-navy text-sm font-semibold text-white hover:bg-navy/90"
+    >
+      Start a chat
+    </button>
+    <a
+      href={PHONE_HREF}
+      class="flex h-10 items-center justify-center rounded-md border border-border text-sm font-semibold text-navy"
+    >
+      Call {PHONE}
+    </a>
   </div>
 
-  <form data-chat-form class="mt-3 flex gap-2">
-    <input
-      data-chat-input
-      type="text"
-      autocomplete="off"
-      aria-label="Type a message"
-      placeholder="Type a message…"
-      class="h-10 flex-1 rounded-md border border-border bg-background px-3 text-sm outline-none focus-visible:border-ring focus-visible:ring-[3px] focus-visible:ring-ring/50"
-    />
-    <button type="submit" class="h-10 rounded-md bg-navy px-3 text-sm font-semibold text-white hover:bg-navy/90">
-      Send
-    </button>
-  </form>
+  <!-- 2. Conversation (revealed on Start a chat) -->
+  <div data-chat-convo hidden>
+    <div data-chat-log class="mt-3 max-h-56 space-y-2 overflow-y-auto pr-1">
+      <p class="max-w-[85%] rounded-2xl rounded-tl-sm bg-muted px-3 py-2 text-sm text-foreground">
+        Hi! I'm Maya from Straightaway 👋 Ask me anything about shipping your car — or I can help you finish your quote.
+      </p>
+    </div>
+    <form data-chat-form class="mt-3 flex gap-2">
+      <input
+        data-chat-input
+        type="text"
+        autocomplete="off"
+        aria-label="Type a message"
+        placeholder="Type a message…"
+        class="h-10 flex-1 rounded-md border border-border bg-background px-3 text-sm outline-none focus-visible:border-ring focus-visible:ring-[3px] focus-visible:ring-ring/50"
+      />
+      <button type="submit" class="h-10 rounded-md bg-navy px-3 text-sm font-semibold text-white hover:bg-navy/90">
+        Send
+      </button>
+    </form>
+  </div>
 </div>
