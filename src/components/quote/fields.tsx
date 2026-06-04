@@ -119,6 +119,33 @@ export function ZipField({
   );
 }
 
+export function DateField({
+  value,
+  error,
+  onChange,
+}: {
+  value: string;
+  error?: string;
+  onChange: (v: string) => void;
+}) {
+  const id = useId();
+  const today = new Date().toISOString().slice(0, 10);
+  return (
+    <Field id={id} label="Ship date" error={error}>
+      <Input
+        id={id}
+        type="date"
+        min={today}
+        value={value}
+        onChange={(e) => onChange(e.target.value)}
+        aria-invalid={!!error}
+        aria-describedby={error ? `${id}-error` : undefined}
+        className="h-12"
+      />
+    </Field>
+  );
+}
+
 /** From/To ZIP pair with a little connector arrow centered on the gap. */
 export function ZipPair({
   originZip,

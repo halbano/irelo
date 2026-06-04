@@ -6,6 +6,7 @@ import { useLeadForm } from "./useLeadForm";
 import {
   CallLink,
   ContactReassurance,
+  DateField,
   EmailHint,
   FormError,
   PhoneField,
@@ -65,6 +66,12 @@ export default function SingleQuoteForm({ variant = "b" }: { variant?: string })
           value={values.vehicleType}
           error={errors.vehicleType}
           onChange={(v) => set("vehicleType", v)}
+        />
+
+        <DateField
+          value={values.shipDate}
+          error={errors.shipDate}
+          onChange={(v) => set("shipDate", v)}
         />
 
         <TextField

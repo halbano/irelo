@@ -27,7 +27,7 @@ export function validateLead(input: Partial<LeadInput>): FieldErrors {
   if (!ZIP.test(input.destinationZip ?? "")) e.destinationZip = "Enter a 5-digit ZIP";
   if (!VEHICLE_TYPES.includes(input.vehicleType as VehicleType))
     e.vehicleType = "Choose a vehicle type";
-  // shipDate is optional — Variant A omits the field; Variant B collects it.
+  if (!input.shipDate) e.shipDate = "Pick a ship date";
 
   if (!input.fullName || input.fullName.trim().length < 2)
     e.fullName = "Enter your full name";

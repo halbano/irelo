@@ -27,9 +27,9 @@ which caused it. One variable = a clean causal read.
 | Progress UI | Step pips, back control | None |
 | Fields | — identical — | — identical — |
 
-(History: ship date was briefly dropped from A only, which made it a two-variable test; it was then
-removed from B as well, restoring a clean single-variable comparison. Both variants collect the same
-fields — origin/destination ZIP, vehicle, name, email, optional phone.)
+Both variants collect the **same fields** — origin/destination ZIP, vehicle, ship date, name, email,
+and an optional phone. The *only* difference is how they're paginated, which keeps the comparison
+clean (a win is attributable to step count, nothing else).
 
 ## Assignment
 
