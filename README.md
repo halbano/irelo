@@ -97,16 +97,15 @@ retry once. If no, I fail clean and let the user re-submit, because a duplicate 
 
 ---
 
-## Part 3 — Decisions (draft for review)
+## Part 3 — Decisions
 
 ### 1. Design direction — why, what I cut, what's next
 
 **Direction: high-converting minimal.** The quote form *is* the hero; the page leads with the route
-pair and one orange CTA. The conversion logic: low friction, one decision at a time (2 steps, never 8
-fields on screen). The lift comes from **type scale, spacing, and a single isolated accent** (Von
+pair and one orange CTA. The conversion logic: low friction, one decision at a time (2 steps, never all fields on screen). The lift comes from **type scale, spacing, and a single isolated accent** (Von
 Restorff — orange reserved *only* for the primary CTA; navy carries trust everywhere else), not from
 decoration. One serif accent (Fraunces) on the headline is the single premium touch; everything else
-is Geist sans. No hero photo — it would cost mobile LCP for no conversion gain.
+is Geist sans. No hero photo — it would cost mobile LCP for no conversion big gain initially.
 
 **Cut for time:** address autocomplete / ZIP-to-city echo, inline price-range teaser before submit,
 animated step transitions, real review-platform widgets (the Trustpilot/ratings are placeholders).
