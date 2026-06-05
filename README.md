@@ -90,6 +90,8 @@ after a timeout can create a second lead, because the first request may have suc
 - User-facing: a clear, recoverable error ("We couldn't confirm your request now — please try again"), and the
   form keeps their data on the fields so one tap re-submits (this is crucial)
 
+- Ideally, we could have a second service (as a fallback), pointing to a centralized DB to handle unexpected connection errors, downtime, etc too.
+
 ---
 
 ## Part 3 — Decisions
